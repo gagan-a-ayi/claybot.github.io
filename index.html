@@ -1,458 +1,917 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Claybot Pro — AI assistant powered by Google Gemini with real-time web search" />
-  <meta name="theme-color" content="#0f0f1a" />
-  <title>Claybot Pro</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --electric: #4f46e5; --electric-l: #818cf8;
-      --cyan: #06b6d4; --cyan-l: #67e8f9;
-      --emerald: #10b981; --rose: #f43f5e;
-      --bg: #0f0f1a; --text: #e2e8f0; --text-dim: #94a3b8;
-    }
-    html, body {
-      height: 100%; width: 100%;
-      font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      background-image:
-        radial-gradient(ellipse 80% 60% at 20% -10%, rgba(79,70,229,.28) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 50% at 90% 110%, rgba(6,182,212,.22) 0%, transparent 60%),
-        radial-gradient(ellipse 50% 40% at 60% 50%, rgba(124,58,237,.12) 0%, transparent 60%);
-      display: flex; align-items: center; justify-content: center;
-      padding: 16px; overflow: hidden;
-    }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ClayBot – Mental Health Check-in</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --indigo: #4f46e5; --cyan: #06b6d4; --violet: #7c3aed;
+    --emerald: #10b981; --rose: #f43f5e; --amber: #f59e0b;
+    --text: #e2e8f0; --muted: #94a3b8; --bg: #0f0f1a;
+    --card-bg: rgba(22,22,42,0.78); --bubble-bot: rgba(79,70,229,0.18);
+  }
+  html,body { width:100%; height:100%; background:var(--bg); font-family:'Inter',sans-serif; color:var(--text); overflow:hidden; }
 
-    /* Orbs */
-    .orb { position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; opacity: .55; }
-    .orb-1 { width:500px;height:500px;background:radial-gradient(circle,#4f46e5,#7c3aed);top:-180px;left:-120px;animation:orbFloat 10s ease-in-out infinite alternate; }
-    .orb-2 { width:400px;height:400px;background:radial-gradient(circle,#06b6d4,#10b981);bottom:-160px;right:-100px;animation:orbFloat 13s ease-in-out infinite alternate-reverse; }
-    .orb-3 { width:260px;height:260px;background:radial-gradient(circle,#f43f5e,#f59e0b);top:40%;left:60%;animation:orbFloat 9s ease-in-out infinite alternate; }
-    @keyframes orbFloat { from{transform:translate(0,0) scale(1);}to{transform:translate(24px,18px) scale(1.07);} }
+  .orb-layer { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+  .orb { position:absolute; border-radius:50%; filter:blur(80px); opacity:.32; animation:orbDrift 8s ease-in-out infinite alternate; }
+  .orb1 { width:420px;height:420px;background:radial-gradient(circle,#4f46e5,transparent 70%);top:-120px;left:-100px;animation-duration:9s; }
+  .orb2 { width:320px;height:320px;background:radial-gradient(circle,#06b6d4,transparent 70%);bottom:-80px;right:-60px;animation-duration:11s;animation-delay:-3s; }
+  .orb3 { width:260px;height:260px;background:radial-gradient(circle,#f43f5e,transparent 70%);top:40%;left:60%;animation-duration:13s;animation-delay:-6s; }
+  @keyframes orbDrift { from{transform:translate(0,0)scale(1)} to{transform:translate(30px,20px)scale(1.1)} }
 
-    /* Key Gate */
-    #keyGate {
-      position:fixed;inset:0;z-index:100;
-      background:rgba(10,10,22,.92);backdrop-filter:blur(20px);
-      display:flex;align-items:center;justify-content:center;padding:20px;
-    }
-    .key-card {
-      width:100%;max-width:440px;
-      background:rgba(22,22,42,.97);
-      border:1.5px solid rgba(79,70,229,.35);border-radius:32px;
-      padding:36px 32px;
-      box-shadow:8px 8px 0px rgba(79,70,229,.28),0 30px 80px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.07);
-      text-align:center;
-    }
-    .key-logo {
-      width:64px;height:64px;border-radius:22px;
-      background:linear-gradient(135deg,#4f46e5 0%,#06b6d4 100%);
-      display:flex;align-items:center;justify-content:center;
-      margin:0 auto 20px;
-      box-shadow:6px 6px 0px rgba(79,70,229,.4),inset 0 1px 0 rgba(255,255,255,.2);
-      border:1.5px solid rgba(255,255,255,.15);
-    }
-    .key-title { font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;font-weight:800;color:#fff;margin-bottom:6px; }
-    .key-sub { font-size:13px;color:var(--text-dim);margin-bottom:8px;line-height:1.7; }
-    .key-sub a { color:var(--electric-l);text-decoration:none; }
-    .key-sub a:hover { text-decoration:underline; }
-    .key-badge {
-      display:inline-flex;align-items:center;gap:6px;
-      background:rgba(16,185,129,.12);border:1.5px solid rgba(16,185,129,.3);
-      border-radius:99px;padding:4px 12px;font-size:11.5px;font-weight:700;color:#10b981;
-      margin-bottom:20px;
-    }
-    .key-input {
-      width:100%;background:rgba(255,255,255,.06);
-      border:1.5px solid rgba(255,255,255,.12);border-radius:14px;
-      padding:13px 16px;font-family:'Inter',sans-serif;
-      font-size:13.5px;color:var(--text);outline:none;
-      transition:all .2s;margin-bottom:10px;letter-spacing:.5px;
-    }
-    .key-input::placeholder { color:var(--text-dim);letter-spacing:0; }
-    .key-input:focus { border-color:rgba(79,70,229,.6);background:rgba(255,255,255,.09);box-shadow:0 0 0 3px rgba(79,70,229,.14); }
-    .key-remember {
-      display:flex;align-items:center;gap:8px;
-      font-size:12px;color:var(--text-dim);cursor:pointer;
-      margin-bottom:18px;user-select:none;
-    }
-    .key-remember input[type=checkbox] { accent-color:var(--electric);width:14px;height:14px;cursor:pointer; }
-    .key-btn {
-      width:100%;padding:13px;
-      background:linear-gradient(135deg,#4f46e5 0%,#06b6d4 100%);
-      border:1.5px solid rgba(255,255,255,.18);border-radius:14px;
-      color:white;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;
-      cursor:pointer;
-      box-shadow:5px 5px 0px rgba(79,70,229,.38),inset 0 1px 0 rgba(255,255,255,.2);
-      transition:transform .18s cubic-bezier(.34,1.56,.64,1),box-shadow .18s;
-    }
-    .key-btn:hover { transform:translateY(-2px);box-shadow:6px 7px 0px rgba(79,70,229,.45),0 8px 20px rgba(79,70,229,.3); }
-    .key-btn:disabled { opacity:.5;cursor:not-allowed;transform:none; }
-    .key-err { font-size:12px;color:#f87171;margin-top:10px;min-height:16px; }
-    .key-note { font-size:11px;color:var(--text-dim);margin-top:14px;opacity:.7;line-height:1.6; }
-    .key-steps {
-      text-align:left;background:rgba(255,255,255,.04);
-      border:1px solid rgba(255,255,255,.08);border-radius:12px;
-      padding:14px 16px;margin-bottom:20px;font-size:12px;color:var(--text-dim);line-height:2;
-    }
-    .key-steps span { color:var(--electric-l);font-weight:700; }
+  .stage { position:relative;z-index:1;display:flex;align-items:center;justify-content:center;width:100%;height:100vh;padding:20px; }
 
-    /* Chat Wrapper */
-    .chat-wrapper {
-      position:relative;z-index:1;width:100%;max-width:480px;
-      height:min(740px,calc(100vh - 32px));
-      display:flex;flex-direction:column;
-      background:rgba(22,22,42,.78);
-      backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
-      border-radius:40px;border:1.5px solid rgba(255,255,255,.10);
-      box-shadow:0 0 0 1px rgba(79,70,229,.18),8px 8px 0px 0px rgba(79,70,229,.22),0 30px 80px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.09);
-      overflow:hidden;
-    }
+  .card { width:100%;max-width:480px;height:740px;background:var(--card-bg);border-radius:40px;border:1.5px solid rgba(79,70,229,.28);box-shadow:8px 8px 0px rgba(79,70,229,.22),0 30px 80px rgba(0,0,0,.5);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);display:flex;flex-direction:column;overflow:hidden; }
 
-    /* Header */
-    .chat-header {
-      display:flex;align-items:center;gap:14px;padding:20px 22px 18px;
-      background:linear-gradient(135deg,rgba(79,70,229,.35) 0%,rgba(6,182,212,.20) 100%);
-      border-bottom:1.5px solid rgba(255,255,255,.08);
-      box-shadow:0 4px 24px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.08);
-      flex-shrink:0;
-    }
-    .header-logo {
-      width:52px;height:52px;flex-shrink:0;border-radius:18px;
-      background:linear-gradient(135deg,#4f46e5 0%,#06b6d4 100%);
-      display:flex;align-items:center;justify-content:center;
-      box-shadow:6px 6px 0px rgba(79,70,229,.45),inset 0 1px 0 rgba(255,255,255,.25);
-      border:1.5px solid rgba(255,255,255,.18);animation:logoHover 4s ease-in-out infinite;
-    }
-    @keyframes logoHover{0%,100%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-3px) rotate(2deg);}}
-    .header-info { flex:1; }
-    .header-name { font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:800;color:#fff;letter-spacing:-.3px;line-height:1.1; }
-    .header-sub { font-size:11.5px;font-weight:500;color:var(--text-dim);margin-top:3px;display:flex;align-items:center;gap:6px; }
-    .pulse-dot { width:7px;height:7px;background:#10b981;border-radius:50%;box-shadow:0 0 8px #10b981;animation:pulseDot 2s infinite; }
-    @keyframes pulseDot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.6;transform:scale(.8);}}
-    .header-key-btn {
-      width:36px;height:36px;border-radius:12px;flex-shrink:0;
-      background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.12);
-      display:flex;align-items:center;justify-content:center;
-      cursor:pointer;transition:all .18s;color:var(--text-dim);
-      box-shadow:3px 3px 0px rgba(0,0,0,.2);
-    }
-    .header-key-btn:hover{background:rgba(255,255,255,.14);color:var(--text);transform:translateY(-1px);}
-    .live-badge {
-      display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:99px;
-      background:rgba(16,185,129,.15);border:1.5px solid rgba(16,185,129,.35);
-      font-size:11px;font-weight:700;color:#10b981;
-      box-shadow:0 0 12px rgba(16,185,129,.15),inset 0 1px 0 rgba(255,255,255,.08);
-    }
+  /* Header */
+  .header { background:linear-gradient(135deg,#4f46e5 0%,#06b6d4 100%);padding:18px 22px;display:flex;align-items:center;gap:14px;flex-shrink:0; }
+  .logo-tile { width:46px;height:46px;background:rgba(255,255,255,.15);border-radius:18px;border:1.5px solid rgba(255,255,255,.28);box-shadow:4px 4px 0 rgba(0,0,0,.22);display:flex;align-items:center;justify-content:center;font-size:22px;animation:logoBob 3s ease-in-out infinite alternate;flex-shrink:0; }
+  @keyframes logoBob { from{transform:translateY(0)rotate(-2deg)} to{transform:translateY(-4px)rotate(2deg)} }
+  .header-info { flex:1; }
+  .bot-name { font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:18px;color:#fff;letter-spacing:-.3px; }
+  .status-row { display:flex;align-items:center;gap:6px;margin-top:3px; }
+  .status-dot { width:8px;height:8px;border-radius:50%;background:var(--emerald);box-shadow:0 0 6px var(--emerald);animation:pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.6;transform:scale(.8)} }
+  .status-text { font-size:12px;color:rgba(255,255,255,.75);font-weight:500; }
+  .live-badge { background:rgba(16,185,129,.2);border:1px solid rgba(16,185,129,.5);color:#6ee7b7;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.5px;box-shadow:0 0 8px rgba(16,185,129,.18); }
 
-    /* Messages */
-    .chat-messages { flex:1;overflow-y:auto;padding:18px 16px 8px;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth; }
-    .chat-messages::-webkit-scrollbar{width:4px;}
-    .chat-messages::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:99px;}
+  /* Level badge */
+  .level-badge { display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;margin-bottom:8px;letter-spacing:.4px; }
+  .level-basic    { background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.4);color:#6ee7b7; }
+  .level-intermediate { background:rgba(6,182,212,.15);border:1px solid rgba(6,182,212,.4);color:#67e8f9; }
+  .level-advanced { background:rgba(79,70,229,.2);border:1px solid rgba(79,70,229,.5);color:#a5b4fc; }
+  .level-pro      { background:rgba(124,58,237,.2);border:1px solid rgba(124,58,237,.5);color:#c4b5fd; }
+  .level-consult  { background:rgba(244,63,94,.15);border:1px solid rgba(244,63,94,.4);color:#fca5a5; }
 
-    .message-row{display:flex;align-items:flex-end;gap:9px;animation:popIn .4s cubic-bezier(.34,1.56,.64,1) both;}
-    .message-row.user-row{flex-direction:row-reverse;}
-    @keyframes popIn{from{opacity:0;transform:scale(.80) translateY(14px);}to{opacity:1;transform:scale(1) translateY(0);}}
+  /* Progress stepper */
+  .progress-bar { display:flex;align-items:center;gap:4px;margin-bottom:10px;flex-wrap:wrap; }
+  .prog-step { display:flex;align-items:center;gap:4px;font-size:10.5px;font-weight:600;color:var(--muted); }
+  .prog-step.active { color:var(--cyan); }
+  .prog-step.done { color:var(--emerald); text-decoration:line-through;opacity:.7; }
+  .prog-dot { width:7px;height:7px;border-radius:50%;background:currentColor;flex-shrink:0; }
+  .prog-sep { width:12px;height:1px;background:rgba(255,255,255,.1);flex-shrink:0; }
 
-    .bot-avatar-sm {
-      width:32px;height:32px;flex-shrink:0;border-radius:11px;
-      background:linear-gradient(135deg,#4f46e5 0%,#06b6d4 100%);
-      display:flex;align-items:center;justify-content:center;
-      box-shadow:3px 3px 0px rgba(79,70,229,.4),inset 0 1px 0 rgba(255,255,255,.2);
-      border:1.5px solid rgba(255,255,255,.12);
-    }
-    .message-bubble{max-width:78%;padding:12px 16px;font-size:13.5px;font-weight:500;line-height:1.65;color:var(--text);}
-    .bot-bubble{background:rgba(79,70,229,.18);border-radius:22px 22px 22px 6px;border:1.5px solid rgba(79,70,229,.30);box-shadow:5px 5px 0px rgba(79,70,229,.22),inset 0 1px 0 rgba(255,255,255,.07);backdrop-filter:blur(12px);}
-    .user-bubble{background:linear-gradient(135deg,rgba(6,182,212,.22) 0%,rgba(79,70,229,.25) 100%);border-radius:22px 22px 6px 22px;border:1.5px solid rgba(6,182,212,.28);box-shadow:5px 5px 0px rgba(6,182,212,.18),inset 0 1px 0 rgba(255,255,255,.08);backdrop-filter:blur(12px);}
+  /* Messages */
+  .messages { flex:1;overflow-y:auto;overflow-x:hidden;padding:20px 18px;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth; }
+  .messages::-webkit-scrollbar { width:4px; }
+  .messages::-webkit-scrollbar-thumb { background:rgba(79,70,229,.3);border-radius:4px; }
 
-    .web-label{display:flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;color:#06b6d4;margin:8px 0 5px;}
-    .sources-wrap{display:flex;flex-wrap:wrap;gap:5px;}
-    .source-chip{display:inline-flex;align-items:center;gap:4px;background:rgba(6,182,212,.10);border-radius:8px;padding:4px 9px;font-size:10.5px;font-weight:600;color:#67e8f9;border:1px solid rgba(6,182,212,.25);text-decoration:none;transition:all .15s;cursor:pointer;}
-    .source-chip:hover{background:rgba(6,182,212,.20);transform:translateY(-1px);}
+  .msg-row { display:flex;gap:10px;animation:popIn .35s cubic-bezier(.34,1.56,.64,1) both; }
+  @keyframes popIn { from{opacity:0;transform:scale(.8)translateY(10px)} to{opacity:1;transform:scale(1)translateY(0)} }
+  .msg-row.bot { align-items:flex-end; }
+  .msg-row.user { justify-content:flex-end; }
 
-    .msg-time{display:block;font-size:10px;font-weight:500;color:var(--text-dim);margin-top:5px;opacity:.65;}
-    .user-row .msg-time{text-align:right;}
+  .bot-avatar { width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,var(--indigo),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;box-shadow:3px 3px 0 rgba(79,70,229,.3); }
 
-    /* Typing */
-    .typing-wrapper{display:flex;align-items:flex-end;gap:9px;padding:0 16px 8px;flex-shrink:0;animation:popIn .3s cubic-bezier(.34,1.56,.64,1) both;}
-    .typing-bubble{background:rgba(79,70,229,.18);border-radius:22px 22px 22px 6px;border:1.5px solid rgba(79,70,229,.25);padding:12px 16px;display:flex;align-items:center;gap:5px;box-shadow:5px 5px 0px rgba(79,70,229,.18);}
-    .typing-label{font-size:11px;font-weight:600;color:var(--text-dim);margin-right:4px;}
-    .dot{width:6px;height:6px;background:var(--electric-l);border-radius:50%;animation:dotBounce 1.2s ease-in-out infinite;}
-    .dot:nth-child(2){animation-delay:.2s;}.dot:nth-child(3){animation-delay:.4s;}
-    @keyframes dotBounce{0%,60%,100%{transform:translateY(0);opacity:.4;}30%{transform:translateY(-7px);opacity:1;}}
+  .bubble { max-width:82%;padding:13px 16px;font-size:13.5px;line-height:1.68;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px); }
+  .bubble.bot-bubble { background:var(--bubble-bot);border:1px solid rgba(79,70,229,.35);border-radius:22px 22px 22px 6px;box-shadow:5px 5px 0 rgba(79,70,229,.18);color:var(--text); }
+  .bubble.user-bubble { background:linear-gradient(135deg,#06b6d4,#4f46e5);border-radius:22px 22px 6px 22px;color:#fff;box-shadow:5px 5px 0 rgba(6,182,212,.2);font-weight:500; }
 
-    /* Input */
-    .chat-input-area{display:flex;align-items:center;gap:10px;padding:12px 16px 18px;background:rgba(255,255,255,.03);border-top:1.5px solid rgba(255,255,255,.07);flex-shrink:0;}
-    .chat-input{flex:1;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.10);border-radius:26px;padding:12px 18px;font-family:'Inter',sans-serif;font-size:13.5px;font-weight:500;color:var(--text);outline:none;transition:all .25s;box-shadow:inset 0 2px 8px rgba(0,0,0,.2),3px 3px 0px rgba(79,70,229,.12);}
-    .chat-input::placeholder{color:var(--text-dim);font-weight:400;}
-    .chat-input:focus{border-color:rgba(79,70,229,.55);background:rgba(255,255,255,.09);box-shadow:inset 0 2px 8px rgba(0,0,0,.15),3px 3px 0px rgba(79,70,229,.25),0 0 0 3px rgba(79,70,229,.12);}
-    .chat-input:disabled{opacity:.45;cursor:not-allowed;}
-    .send-btn{width:48px;height:48px;border-radius:16px;flex-shrink:0;background:linear-gradient(135deg,#4f46e5 0%,#06b6d4 100%);border:1.5px solid rgba(255,255,255,.18);color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .18s cubic-bezier(.34,1.56,.64,1),box-shadow .18s;box-shadow:5px 5px 0px rgba(79,70,229,.38),inset 0 1px 0 rgba(255,255,255,.25);}
-    .send-btn:hover:not(:disabled){transform:scale(1.07) translateY(-1px);box-shadow:6px 6px 0px rgba(79,70,229,.45),0 8px 20px rgba(79,70,229,.35);}
-    .send-btn:disabled{opacity:.4;cursor:not-allowed;}
-    .send-btn.bounce{animation:btnBounce .38s cubic-bezier(.34,1.56,.64,1);}
-    @keyframes btnBounce{0%{transform:scale(1);}30%{transform:scale(.86);}65%{transform:scale(1.16);}85%{transform:scale(.97);}100%{transform:scale(1);}}
+  .bubble h2 { font-size:16px;font-weight:700;color:#fff;border-bottom:1.5px solid rgba(79,70,229,.5);padding-bottom:5px;margin-bottom:9px; }
+  .bubble h3 { font-size:12.5px;font-weight:700;text-transform:uppercase;color:#c4b5fd;letter-spacing:.8px;margin:10px 0 5px; }
+  .bubble strong { color:#fff;font-weight:700; }
+  .bubble em { color:#c4b5fd;font-style:italic; }
+  .bubble ul { list-style:none;padding-left:2px;margin:5px 0;display:flex;flex-direction:column;gap:4px; }
+  .bubble ul li { padding-left:16px;position:relative; }
+  .bubble ul li::before { content:'▸';color:var(--indigo);position:absolute;left:0;font-size:12px; }
+  .bubble blockquote { border-left:3px solid var(--indigo);background:rgba(79,70,229,.1);padding:8px 12px;border-radius:0 8px 8px 0;margin:8px 0;color:#c4b5fd;font-style:italic;font-size:13px; }
+  .bubble p { margin-bottom:6px; }
+  .bubble p:last-child { margin-bottom:0; }
+  .bubble code { background:rgba(6,182,212,.15);color:#67e8f9;font-family:'Courier New',monospace;font-size:11.5px;padding:1px 6px;border-radius:5px; }
 
-    .date-chip{align-self:center;font-size:11px;font-weight:600;color:var(--text-dim);background:rgba(255,255,255,.06);border-radius:99px;padding:5px 14px;border:1px solid rgba(255,255,255,.08);}
-    .error-bubble{background:rgba(244,63,94,.15)!important;border-color:rgba(244,63,94,.30)!important;box-shadow:5px 5px 0px rgba(244,63,94,.18)!important;}
+  /* Next level prompt */
+  .next-level-wrap { margin-top:10px; }
+  .next-level-btn { display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.05);border:1px solid rgba(79,70,229,.4);color:#a5b4fc;font-size:12px;font-weight:600;padding:7px 16px;border-radius:20px;cursor:pointer;transition:all .2s; }
+  .next-level-btn:hover { background:rgba(79,70,229,.25);border-color:var(--indigo);color:#fff;transform:translateY(-1px);box-shadow:0 4px 12px rgba(79,70,229,.3); }
 
-    @media(max-width:500px){
-      body{padding:0;align-items:flex-end;}
-      .chat-wrapper{max-width:100%;height:100vh;height:100dvh;border-radius:32px 32px 0 0;}
-      .orb{display:none;}
-      .key-card{padding:28px 20px;border-radius:28px 28px 0 0;}
-    }
-  </style>
+  /* Quick replies */
+  .quick-replies { display:flex;flex-wrap:wrap;gap:7px;margin-top:10px; }
+  .qr-chip { background:rgba(79,70,229,.15);border:1px solid rgba(79,70,229,.4);color:#c4b5fd;font-size:12px;font-weight:600;padding:6px 13px;border-radius:20px;cursor:pointer;transition:all .2s; }
+  .qr-chip:hover { background:rgba(79,70,229,.35);border-color:var(--indigo);color:#fff;transform:translateY(-1px);box-shadow:0 4px 12px rgba(79,70,229,.3); }
+
+  /* Source chips */
+  .source-chips { display:flex;flex-wrap:wrap;gap:6px;margin-top:8px; }
+  .source-chip { display:flex;align-items:center;gap:5px;background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.28);color:#67e8f9;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;cursor:pointer;transition:transform .2s,box-shadow .2s; }
+  .source-chip:hover { transform:translateY(-1px);box-shadow:0 4px 10px rgba(6,182,212,.2); }
+
+  /* Typing */
+  .typing-bubble { display:flex;align-items:center;gap:8px;padding:13px 16px;background:var(--bubble-bot);border:1px solid rgba(79,70,229,.35);border-radius:22px 22px 22px 6px;box-shadow:5px 5px 0 rgba(79,70,229,.18); }
+  .dots { display:flex;gap:4px;align-items:center; }
+  .dot { width:7px;height:7px;border-radius:50%;background:var(--indigo);animation:bounce 1.1s ease-in-out infinite; }
+  .dot:nth-child(2){animation-delay:.15s} .dot:nth-child(3){animation-delay:.3s}
+  @keyframes bounce { 0%,100%{transform:translateY(0);opacity:.5} 50%{transform:translateY(-5px);opacity:1} }
+
+  /* Input */
+  .input-area { padding:14px 16px 18px;display:flex;align-items:center;gap:10px;flex-shrink:0;border-top:1px solid rgba(79,70,229,.15);background:rgba(15,15,26,.5); }
+  .input-pill { flex:1;background:rgba(255,255,255,.05);border:1.5px solid rgba(79,70,229,.25);border-radius:30px;padding:12px 20px;font-size:14px;font-family:'Inter',sans-serif;color:var(--text);outline:none;box-shadow:inset 2px 2px 6px rgba(0,0,0,.2);transition:border-color .2s,box-shadow .2s;resize:none;min-height:46px;max-height:120px;overflow-y:auto; }
+  .input-pill::placeholder { color:var(--muted); }
+  .input-pill:focus { border-color:var(--indigo);box-shadow:inset 2px 2px 6px rgba(0,0,0,.2),0 0 0 3px rgba(79,70,229,.18); }
+  .send-btn { width:48px;height:48px;background:linear-gradient(135deg,var(--indigo),var(--cyan));border:none;border-radius:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:4px 4px 0 rgba(79,70,229,.35);transition:transform .15s,box-shadow .15s;flex-shrink:0; }
+  .send-btn:hover { transform:translateY(-2px);box-shadow:4px 6px 0 rgba(79,70,229,.45); }
+  .send-btn:active { animation:springBounce .35s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes springBounce { 0%{transform:scale(1)} 40%{transform:scale(.85)} 70%{transform:scale(1.1)} 100%{transform:scale(1)} }
+  .send-btn svg { width:20px;height:20px;fill:#fff; }
+
+  @media(max-width:500px){.stage{padding:0;align-items:flex-end}.card{max-width:100%;height:100vh;border-radius:24px 24px 0 0}}
+</style>
 </head>
 <body>
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
-
-
-
-  <!-- Chat UI -->
-  <div class="chat-wrapper">
-    <div class="chat-header">
-      <div class="header-logo">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 2a4 4 0 0 1 4 4c0 .93-.32 1.78-.85 2.45A4 4 0 0 1 18 12a4 4 0 0 1-2 3.46V17a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-1.54A4 4 0 0 1 6 12a4 4 0 0 1 2.85-3.55A4 4 0 0 1 8 6a4 4 0 0 1 4-4z"/>
-          <circle cx="12" cy="12" r="1.5" fill="white" stroke="none"/>
-        </svg>
-      </div>
+<div class="orb-layer">
+  <div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div>
+</div>
+<div class="stage">
+  <div class="card">
+    <div class="header">
+      <div class="logo-tile">🧠</div>
       <div class="header-info">
-        <div class="header-name">Claybot Pro</div>
-        <div class="header-sub"><span class="pulse-dot"></span> Gemini · Web-connected</div>
+        <div class="bot-name">ClayBot</div>
+        <div class="status-row"><div class="status-dot"></div><span class="status-text">Mental Health Check-in</span></div>
       </div>
-      <div class="live-badge" style="margin-right:6px;">
-        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-        Live
-      </div>
-      <button class="header-key-btn" onclick="changeKey()" title="Change API key">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
-        </svg>
-      </button>
+      <div class="live-badge">LIVE</div>
     </div>
-
-    <div class="chat-messages" id="chatMessages"></div>
-
-    <div class="typing-wrapper" id="typingIndicator" style="display:none;">
-      <div class="bot-avatar-sm">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
-        </svg>
-      </div>
-      <div class="typing-bubble">
-        <span class="typing-label" id="typingLabel">thinking</span>
-        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-      </div>
-    </div>
-
-    <div class="chat-input-area">
-      <input type="text" id="userInput" class="chat-input" placeholder="Ask anything — I'll search the web 🌐" autocomplete="off" maxlength="500" />
-      <button class="send-btn" id="sendBtn" aria-label="Send">
-        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-        </svg>
-      </button>
+    <div class="messages" id="messages"></div>
+    <div class="input-area">
+      <textarea class="input-pill" id="userInput" placeholder="How are you feeling today…" rows="1"></textarea>
+      <button class="send-btn" id="sendBtn"><svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
     </div>
   </div>
+</div>
 
-  <script>
-    const messagesEl  = document.getElementById('chatMessages');
-    const inputEl     = document.getElementById('userInput');
-    const sendBtn     = document.getElementById('sendBtn');
-    const typingEl    = document.getElementById('typingIndicator');
-    const typingLabel = document.getElementById('typingLabel');
-    const keyGate     = document.getElementById('keyGate');
-    const keyInput    = document.getElementById('keyInput');
-    const keyErr      = document.getElementById('keyErr');
-    const rememberKey = document.getElementById('rememberKey');
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// DATASET: Multi-level, situation-specific mental health responses
+// ═══════════════════════════════════════════════════════════════════
 
-    let history = [], busy = false;
-    const API_KEY = 'AIzaSyBLPj1-vCzQYCFI8yX9RdcY9drqxu8Oyvw';
+const CONSULT_LEVEL = {
+  label: "consult", icon: "🏥",
+  title: "Time to Reach Out to a Professional",
+  text: `<p>You've worked through several layers — and that takes real strength. 💪</p><p>If these strategies haven't brought enough relief, <strong>speaking with a professional is the most powerful next step</strong>. It's not a sign of failure — it's the smartest, bravest thing you can do.</p><h3>🧭 Who to reach out to</h3><ul><li><strong>Therapist / Psychologist</strong> — for talk therapy, CBT, coping strategies</li><li><strong>Psychiatrist</strong> — if medication may help alongside therapy</li><li><strong>General Practitioner (GP/Doctor)</strong> — a great first step, can refer you</li><li><strong>Counsellor</strong> — for guided support through life challenges</li></ul><h3>🌐 Find help online</h3><ul><li><code>BetterHelp.com</code> — online therapy, matched to your needs</li><li><code>Talkspace.com</code> — text & video therapy</li><li><code>psychologytoday.com/find-a-therapist</code> — local therapist directory</li><li><strong>India:</strong> iCall <code>9152987821</code> | Vandrevala <code>1860-2662-345</code></li><li><strong>US:</strong> SAMHSA <code>1-800-662-4357</code></li><li><strong>UK:</strong> NHS <code>111</code> or Mind <code>0300 123 3393</code></li></ul><blockquote>Asking for help is one of the most courageous things a human can do. 🌷</blockquote>`,
+  sources: ["psychologytoday.com","betterhelp.com","who.int/mental-health"]
+};
 
-    // Gemini model — gemini-2.0-flash is free, fast, and has Google Search grounding
-    const MODEL = 'gemini-2.0-flash';
-    const API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models/' + MODEL;
+// Each topic has sub-types, each with 4 progressive levels + a consult flag
+const DATASET = {
 
-    const SYSTEM_INSTRUCTION = `You are Claybot Pro — a sharp, professional AI assistant with real-time web search via Google Search grounding.
-Format your responses with proper markdown:
-- Use # for main headings, ## for subheadings, ### for section labels
-- Use **bold** for key terms, *italic* for emphasis, __underline__ for important points
-- Use - for bullet lists and 1. for numbered lists
-- Use > for quotes or callouts
-- Use \`code\` for technical terms
-Keep answers concise, accurate, and well-structured. Cite sources when referencing specific facts.`;
-
-    // ── Boot ─────────────────────────────────────────────
-    init();
-
-    // ── Utils ─────────────────────────────────────────────
-    const getTime = () => new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
-    const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-
-    function md(raw) {
-      let t = raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-      t = t.replace(/^### (.+)$/gm, '<p style="font-size:13px;font-weight:700;color:#a5b4fc;text-transform:uppercase;letter-spacing:.6px;margin:10px 0 3px;">$1</p>');
-      t = t.replace(/^## (.+)$/gm,  '<p style="font-size:16.5px;font-weight:800;color:#e2e8f0;margin:12px 0 4px;letter-spacing:-.2px;line-height:1.3;">$1</p>');
-      t = t.replace(/^# (.+)$/gm,   '<p style="font-size:19px;font-weight:800;color:#fff;margin:14px 0 5px;letter-spacing:-.3px;line-height:1.25;border-bottom:1.5px solid rgba(79,70,229,.35);padding-bottom:6px;">$1</p>');
-      t = t.replace(/^(-{3,}|\*{3,})$/gm, '<hr style="border:none;border-top:1px solid rgba(255,255,255,.1);margin:10px 0;">');
-      t = t.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
-      t = t.replace(/\*\*(.+?)\*\*/g, '<strong style="font-weight:700;color:#e2e8f0;">$1</strong>');
-      t = t.replace(/\*(.+?)\*/g, '<em style="color:#c4b5fd;font-style:italic;">$1</em>');
-      t = t.replace(/__(.+?)__/g, '<u style="text-decoration-color:rgba(99,102,241,.7);">$1</u>');
-      t = t.replace(/~~(.+?)~~/g, '<s style="opacity:.55;">$1</s>');
-      t = t.replace(/`([^`]+)`/g, '<code style="background:rgba(255,255,255,.10);padding:1px 6px;border-radius:5px;font-size:12px;color:#67e8f9;font-family:monospace;">$1</code>');
-      t = t.replace(/^[*\-] (.+)$/gm, '<li style="margin:3px 0 3px 4px;list-style:none;display:flex;gap:7px;align-items:flex-start;"><span style="color:#818cf8;margin-top:3px;flex-shrink:0;">▸</span><span>$1</span></li>');
-      t = t.replace(/^\d+\. (.+)$/gm, (m,p1,off,str) => {
-        const n = (str.slice(0,off).match(/^\d+\./gm)||[]).length+1;
-        return `<li style="margin:3px 0 3px 4px;list-style:none;display:flex;gap:7px;align-items:flex-start;"><span style="color:#06b6d4;font-weight:700;font-size:12px;min-width:16px;flex-shrink:0;">${n}.</span><span>${p1}</span></li>`;
-      });
-      t = t.replace(/(<li[^>]*>[\s\S]*?<\/li>)(\s*<li[^>]*>[\s\S]*?<\/li>)*/g, m => `<ul style="padding:0;margin:6px 0;">${m}</ul>`);
-      t = t.replace(/^&gt; (.+)$/gm, '<blockquote style="border-left:3px solid #4f46e5;padding:4px 10px;margin:6px 0;background:rgba(79,70,229,.10);border-radius:0 8px 8px 0;color:#a5b4fc;font-style:italic;">$1</blockquote>');
-      t = t.replace(/\n{2,}/g, '</p><p style="margin:6px 0;">');
-      t = t.replace(/\n/g, '<br>');
-      return `<p style="margin:0;">${t}</p>`;
-    }
-
-    const botSVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>`;
-
-    // ── Init ─────────────────────────────────────────────
-    function init() {
-      const chip = document.createElement('div');
-      chip.className = 'date-chip';
-      chip.textContent = new Date().toLocaleDateString([], { weekday:'long', month:'long', day:'numeric' });
-      messagesEl.appendChild(chip);
-      addBotMessage("Hello! I'm **Claybot Pro** powered by __Google Gemini__ with live web search. Ask me anything — news, weather, prices, facts, or anything that needs current data.", []);
-      inputEl.focus();
-    }
-
-    // ── Message renderers ─────────────────────────────────
-    function addBotMessage(text, sources=[]) {
-      const row = document.createElement('div');
-      row.className = 'message-row bot-row';
-      let srcHTML = '';
-      if (sources && sources.length) {
-        const chips = sources.slice(0,5).map(s => {
-          const label = s.title ? s.title.slice(0,28)+(s.title.length>28?'…':'') : new URL(s.uri||'https://x.com').hostname;
-          return `<a class="source-chip" href="${esc(s.uri||'#')}" target="_blank" rel="noopener">
-            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-            ${esc(label)}</a>`;
-        }).join('');
-        srcHTML = `<div class="web-label"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Web sources</div><div class="sources-wrap">${chips}</div>`;
+  // ─── STRESS ────────────────────────────────────────────────────────
+  stress: {
+    label: "stress",
+    subtypes: {
+      work: {
+        label: "Work / Academic Stress",
+        levels: [
+          { level:"basic", icon:"🌱", title:"Basic: Pause & Reset",
+            text:`<p>Work stress often comes from <strong>doing too much at once</strong>. Let's start simple.</p><h3>⏸️ Immediate Pause Technique</h3><ul><li>Close all tabs except the one task you're on</li><li>Write down your top <strong>3 tasks only</strong> for today</li><li>Take a 5-min walk — even around your room</li></ul><blockquote>You can't pour from an empty cup. A short pause is productive, not lazy.</blockquote>`,
+            qr:["This helped a little","I need more help","Different approach please"] },
+          { level:"intermediate", icon:"🌿", title:"Intermediate: Structure & Boundaries",
+            text:`<p>Let's add structure to reduce the chaos.</p><h3>📅 Time Blocking Method</h3><ul><li>Divide your day into <strong>90-min deep work blocks</strong> with 15-min breaks</li><li>Set a firm <em>"shutdown ritual"</em> — close laptop at the same time daily</li><li>Use the <strong>2-minute rule</strong>: if a task takes under 2 min, do it now</li></ul><h3>🛑 Boundary Scripts</h3><ul><li><em>"I can take that on after I finish this by Thursday."</em></li><li><em>"Let me check my capacity and get back to you."</em></li></ul><blockquote>Boundaries aren't walls — they're the architecture of sustainable performance.</blockquote>`,
+            qr:["Tried this, need more","Something different","This is helping!"] },
+          { level:"advanced", icon:"🔥", title:"Advanced: Cognitive Restructuring",
+            text:`<p>Work stress often hides deeper thought patterns. Let's examine them.</p><h3>🧠 Thought Record Exercise</h3><ul><li>Write the stressful thought: <em>"I'm going to fail this project"</em></li><li>Rate belief 0–100%: <em>80%</em></li><li>Find <strong>evidence for</strong> and <strong>evidence against</strong></li><li>Write a balanced thought: <em>"It's challenging, but I've delivered before"</em></li><li>Re-rate belief: often drops to 30–40%</li></ul><h3>🎯 Decatastrophising</h3><ul><li>Ask: <em>What's the actual worst case? How likely is it? Could I survive it?</em></li><li>Usually, the worst case is survivable — and far less likely than it feels</li></ul>`,
+            qr:["Still struggling","Need professional help","This worked well!"] },
+          { level:"pro", icon:"💎", title:"Pro: Nervous System Regulation",
+            text:`<p>At this level, stress has likely become <em>chronic</em>. Your nervous system needs direct intervention.</p><h3>⚡ Somatic (Body-Based) Techniques</h3><ul><li><strong>Cold water face immersion</strong> — activates the dive reflex, drops heart rate fast</li><li><strong>Progressive Muscle Relaxation (PMR)</strong> — tense each muscle group 5s, release</li><li><strong>Vagal nerve stimulation</strong> — hum, gargle water, or do slow exhale breathing</li></ul><h3>🌊 Lifestyle Restructure</h3><ul><li>Commit to <strong>7–9 hours sleep</strong> as non-negotiable</li><li>30 min moderate exercise, 5x/week — proven to lower cortisol</li><li>Reduce caffeine before noon, eliminate after 2pm</li></ul><blockquote>"The body keeps the score." — Bessel van der Kolk. Chronic stress lives in the body, not just the mind.</blockquote>`,
+            qr:["Nothing is working","I want to see a professional"] },
+        ]
+      },
+      relationship: {
+        label: "Relationship Stress",
+        levels: [
+          { level:"basic", icon:"🌱", title:"Basic: Create Space",
+            text:`<p>Relationship stress is draining because it involves someone you care about. First — <strong>give yourself permission to feel</strong> what you're feeling.</p><h3>💨 Immediate Relief</h3><ul><li>Take a 30-min break from the situation — don't respond in anger</li><li>Write what you're feeling (not what they did) in a private note</li><li>Do one self-care act: warm tea, a shower, favourite music</li></ul><blockquote>You can't resolve an argument while your nervous system is in fight-or-flight.</blockquote>`,
+            qr:["I need communication tips","This helped a bit","Need more strategies"] },
+          { level:"intermediate", icon:"🌿", title:"Intermediate: Non-Violent Communication",
+            text:`<p>NVC (Non-Violent Communication) is one of the most effective tools for relationship conflict.</p><h3>💬 The NVC Formula</h3><ul><li><strong>Observation:</strong> <em>"When you cancelled our plans without warning..."</em></li><li><strong>Feeling:</strong> <em>"I felt hurt and unimportant."</em></li><li><strong>Need:</strong> <em>"I need to feel that my time matters to you."</em></li><li><strong>Request:</strong> <em>"Could you give me notice next time?"</em></li></ul><p>Avoid "you always" / "you never" — these trigger defensiveness, not connection.</p>`,
+            qr:["We keep fighting anyway","Need deeper help","This is useful!"] },
+          { level:"advanced", icon:"🔥", title:"Advanced: Attachment & Patterns",
+            text:`<p>Repeated relationship stress often traces back to <strong>attachment styles</strong> formed in childhood.</p><h3>🔍 Identify Your Pattern</h3><ul><li><strong>Anxious:</strong> Fear of abandonment, needs reassurance, reads into silence</li><li><strong>Avoidant:</strong> Pulls away when things get emotional, values independence highly</li><li><strong>Disorganised:</strong> Wants closeness but fears it; inconsistent responses</li></ul><h3>🌱 Breaking the Cycle</h3><ul><li>Notice your automatic reactions and <em>pause before acting</em></li><li>Name your attachment need out loud to yourself first</li><li>Practice <strong>self-soothing</strong> before seeking external validation</li></ul><blockquote>Awareness of your pattern is already 50% of the healing.</blockquote>`,
+            qr:["The relationship is toxic","Want couples therapy info","Still need help"] },
+          { level:"pro", icon:"💎", title:"Pro: Evaluating the Relationship",
+            text:`<p>At this stage, it's worth asking: <strong>is this relationship healthy for you?</strong></p><h3>🔑 Healthy vs Unhealthy Checklist</h3><ul><li>Do you feel <em>safe, respected, and heard</em> most of the time?</li><li>Is conflict resolved or does it <em>repeat in cycles</em>?</li><li>Are your core needs met — or consistently dismissed?</li></ul><h3>⚖️ Options to Consider</h3><ul><li>Couples / relationship counselling together</li><li>Individual therapy to process your role and needs</li><li>A structured separation period with a clear goal</li></ul><p>If there is <strong>any abuse (emotional, physical, financial)</strong> — please reach out to a specialist immediately.</p>`,
+            qr:["I think I need professional help","There is abuse involved","I want to talk more"] },
+        ]
+      },
+      financial: {
+        label: "Financial Stress",
+        levels: [
+          { level:"basic", icon:"🌱", title:"Basic: Separate Emotion from Action",
+            text:`<p>Financial stress can feel like <em>shame, panic, and helplessness</em> all at once. Let's first separate the feeling from the problem.</p><h3>🧘 Immediate Grounding</h3><ul><li>Acknowledge: <em>"This is stressful. It's okay to feel that."</em></li><li>Avoid checking accounts repeatedly — it amplifies anxiety</li><li>Set a single designated "money time" each day (e.g., 7pm, 15 mins)</li></ul><blockquote>Financial problems are practical problems — they have practical solutions. But panic makes them harder to solve.</blockquote>`,
+            qr:["I don't know where to start","I need budgeting help","Need more relief"] },
+          { level:"intermediate", icon:"🌿", title:"Intermediate: Clarity & Small Wins",
+            text:`<p>Clarity reduces anxiety. You need to <strong>see the actual picture</strong> — not the foggy feared one.</p><h3>📊 The Money Map</h3><ul><li>List <strong>all income</strong> this month (realistic)</li><li>List <strong>fixed essential expenses</strong> (rent, food, utilities)</li><li>Find the gap: surplus or deficit?</li><li>Identify one <strong>small cut</strong> you can make this week</li></ul><h3>🏆 Small Wins</h3><ul><li>Cancel one unused subscription today</li><li>Cook one meal instead of ordering</li><li>Celebrate these — they build momentum</li></ul>`,
+            qr:["I'm in debt","It's getting worse","This helped, thanks!"] },
+          { level:"advanced", icon:"🔥", title:"Advanced: Debt & Recovery Plan",
+            text:`<p>If debt is involved, you need a structured plan rather than avoidance.</p><h3>🎯 Debt Snowball Method</h3><ul><li>List all debts, smallest to largest</li><li>Pay <strong>minimum on all</strong> except the smallest</li><li>Throw every extra rupee/dollar at the smallest</li><li>Once paid, roll that payment to the next — <em>it builds momentum</em></li></ul><h3>📞 Don't Face It Alone</h3><ul><li>Contact creditors — they often have hardship programs</li><li>Look into free debt counselling services in your country</li><li>Avoid payday loans — they trap more than they help</li></ul>`,
+            qr:["I need mental health help for this","I feel hopeless about money","Consult a financial advisor"] },
+          { level:"pro", icon:"💎", title:"Pro: Financial Anxiety as a Mental Health Issue",
+            text:`<p>Chronic financial stress rewires the brain — it literally impairs decision-making and working memory. This is not a character flaw.</p><h3>🧠 What's Happening</h3><ul><li>Scarcity mindset narrows thinking to immediate threats</li><li>Cortisol stays elevated, causing poor sleep and irritability</li><li>Shame creates avoidance — making problems worse</li></ul><h3>💡 Breaking the Cycle</h3><ul><li>Financial therapy combines money coaching + mental health support</li><li>Mindfulness-Based Stress Reduction (MBSR) is shown to help</li><li>Community support groups (Debtors Anonymous) reduce shame</li></ul><blockquote>You are not your bank balance. Your worth is not your net worth.</blockquote>`,
+            qr:["I need to see a counsellor","I feel depressed about this"] },
+        ]
+      },
+      general: {
+        label: "General Stress",
+        levels: [
+          { level:"basic", icon:"🌱", title:"Basic: Name It to Tame It",
+            text:`<p>When stress feels vague and everywhere — the first step is <strong>naming what's actually stressing you</strong>.</p><h3>📝 Stress Inventory (2 mins)</h3><ul><li>Write down every worry currently in your head</li><li>Circle the ones you <em>can actually control</em></li><li>Cross out the ones you cannot</li><li>Pick <strong>one actionable item</strong> from the circled list</li></ul><blockquote>"You can't fix what you haven't named." Start there.</blockquote>`,
+            qr:["It's work stress","It's relationship stress","It's financial stress","Need more help"] },
+          { level:"intermediate", icon:"🌿", title:"Intermediate: Lifestyle Reset",
+            text:`<p>Chronic stress usually has lifestyle roots. Let's address the foundations.</p><h3>🏗️ The Four Pillars</h3><ul><li><strong>Sleep:</strong> Even one extra hour has measurable stress-reduction effects</li><li><strong>Movement:</strong> A 20-min walk cuts cortisol significantly</li><li><strong>Social:</strong> Spend 20+ mins with a non-stressful person today</li><li><strong>Nutrition:</strong> Reduce sugar + caffeine — both spike anxiety</li></ul>`,
+            qr:["I've tried these","Need something deeper","This is helpful!"] },
+          { level:"advanced", icon:"🔥", title:"Advanced: Stress Inoculation",
+            text:`<p>Stress Inoculation Training (SIT) is a clinical technique used by military, athletes, and emergency responders.</p><h3>🎯 How It Works</h3><ul><li><strong>Conceptualise:</strong> Understand your stressor clearly (journal it in detail)</li><li><strong>Rehearse:</strong> Mentally walk through the stressful scenario and your coping response</li><li><strong>Apply:</strong> Gradually expose yourself to mild stress to build resilience</li></ul><p>Regular practice <em>literally changes your stress response threshold</em> over time.</p>`,
+            qr:["I want to talk to someone","Nothing is working"] },
+          { level:"pro", icon:"💎", title:"Pro: Burnout Recovery Protocol",
+            text:`<p>If stress has reached this level, you may be experiencing <strong>burnout</strong> — a clinically recognised state of chronic exhaustion.</p><h3>🔋 Burnout Signals</h3><ul><li>Emotional numbness or detachment</li><li>Inability to feel pleasure in things you loved</li><li>Persistent physical exhaustion despite sleep</li><li>Cynicism about life/work/relationships</li></ul><h3>🌱 Recovery Requires</h3><ul><li>Significant rest — weeks, not days</li><li>Removing or reducing the source of burnout</li><li>Professional support — this is beyond self-help at this stage</li></ul><blockquote>Burnout is your body's final warning. Please listen.</blockquote>`,
+            qr:["I need professional help now","Tell me about therapists"] },
+        ]
       }
-      row.innerHTML = `<div class="bot-avatar-sm">${botSVG}</div>
-        <div style="max-width:80%">
-          <div class="message-bubble bot-bubble">${md(text)}${srcHTML}</div>
-          <span class="msg-time">${getTime()}</span>
-        </div>`;
-      messagesEl.appendChild(row); scrollBottom();
+    },
+    subQR: ["Work / Academic stress","Relationship stress","Financial stress","General / I'm not sure"]
+  },
+
+  // ─── ANXIETY ───────────────────────────────────────────────────────
+  anxiety: {
+    label: "anxiety",
+    subtypes: {
+      social: {
+        label: "Social Anxiety",
+        levels: [
+          { level:"basic", icon:"🌱", title:"Basic: Grounding Before Social Situations",
+            text:`<p>Social anxiety is one of the most common — and most treatable — forms of anxiety. You're not alone.</p><h3>🌿 Pre-Event Grounding</h3><ul><li>Do <strong>box breathing</strong> (4-4-4-4) 5 minutes before the event</li><li>Prepare 2–3 open questions to ask others — removes spotlight from you</li><li>Set a small goal: <em>"I'll talk to at least one new person."</em></li></ul><blockquote>You don't have to be the most interesting person. You just have to be present.</blockquote>`,
+            qr:["I avoid social events","I fear judgment","Need more help"] },
+          { level:"intermediate", icon:"🌿", title:"Intermediate: Cognitive Defusion",
+            text:`<p>Social anxiety is driven by thoughts like <em>"They'll judge me"</em> or <em>"I'll embarrass myself."</em> Let's defuse them.</p><h3>🧠 Defusion Technique</h3><ul><li>Notice the thought: <em>"Everyone is judging me"</em></li><li>Reframe: <em>"I'm having the thought that everyone is judging me"</em></li><li>Add distance: <em>"My anxious mind is telling me a story about judgment"</em></li></ul><p>This creates a gap between you and the thought — you observe it rather than <em>being</em> it.</p>`,
+            qr:["Still very scared","I avoid everything","This helps a little"] },
+          { level:"advanced", icon:"🔥", title:"Advanced: Gradual Exposure Ladder",
+            text:`<p>Avoidance maintains anxiety. <strong>Gradual exposure</strong> — at your own pace — rewires the fear response.</p><h3>🪜 Build Your Exposure Ladder</h3><ul><li><strong>Step 1 (Easy):</strong> Make eye contact with a stranger</li><li><strong>Step 2:</strong> Say hi to a cashier or neighbour</li><li><strong>Step 3:</strong> Have a 2-min small talk conversation</li><li><strong>Step 4:</strong> Join one social event for 20 mins</li><li><strong>Step 5 (Hard):</strong> Attend without an exit plan</li></ul><p>Stay at each step until anxiety drops by at least 50%, then advance.</p>`,
+            qr:["I can't even do step 1","It's really debilitating","I want a therapist"] },
+          { level:"pro", icon:"💎", title:"Pro: CBT + Social Skills Training",
+            text:`<p>At this level, structured therapeutic intervention gives the best outcomes.</p><h3>🎯 Evidence-Based Approaches</h3><ul><li><strong>CBT</strong> (Cognitive Behavioural Therapy) — gold standard for social anxiety</li><li><strong>ACT</strong> (Acceptance & Commitment Therapy) — values-based approach</li><li><strong>Group Therapy</strong> — paradoxically, being in a group is highly effective treatment</li><li><strong>SSRI medication</strong> — sometimes used alongside therapy (psychiatrist)</li></ul><blockquote>Social anxiety disorder is one of the most treatable mental health conditions. Recovery is very possible.</blockquote>`,
+            qr:["Connect me with help","I want to learn more","I'm ready to try therapy"] },
+        ]
+      },
+      performance: {
+        label: "Performance Anxiety",
+        levels: [
+          { level:"basic", icon:"🌱", title:"Basic: Reframe Arousal",
+            text:`<p>Before a presentation, exam, or performance — that racing heart is <strong>not necessarily bad</strong>.</p><h3>⚡ The Reframe</h3><ul><li>Instead of <em>"I'm anxious"</em> → say <em>"I'm excited"</em></li><li>Research shows this simple shift improves performance measurably</li><li>Your body's arousal response is <em>identical</em> for excitement and anxiety — the label changes the outcome</li></ul><blockquote>"Get excited." — Harvard psychologist Alison Wood Brooks' finding: it works.</blockquote>`,
+            qr:["I freeze completely","I need more strategies","What if I fail?"] },
+          { level:"intermediate", icon:"🌿", title:"Intermediate: Preparation & Power Poses",
+            text:`<p>Performance anxiety shrinks when preparation expands.</p><h3>📋 Pre-Performance Checklist</h3><ul><li>Over-prepare the first 2 minutes — once started, anxiety drops</li><li>Do a <strong>power pose</strong> (arms wide, chest open) for 2 mins before — it shifts hormones</li><li>Write down your <strong>3 key points</strong> and keep them as a safety net</li><li>Visualise the performance going <em>well</em>, not just the fear of failure</li></ul>`,
+            qr:["I still freeze","It's affecting my career","Need deeper help"] },
+          { level:"advanced", icon:"🔥", title:"Advanced: Mindful Performance",
+            text:`<p>Elite performers use <strong>present-moment focus</strong> to bypass performance anxiety entirely.</p><h3>🎯 Process Over Outcome</h3><ul><li>Focus entirely on the <em>process</em> (what you're doing right now) not the <em>outcome</em> (how you'll be judged)</li><li>Use a <strong>cue word</strong> to anchor focus: <em>"breathe," "here," "now"</em></li><li>Pre-performance routine — same ritual every time creates neural anchoring</li></ul><p>Athletes call this <em>"the zone."</em> It's accessible to everyone with practice.</p>`,
+            qr:["I want professional help","Still struggling","This is helpful"] },
+          { level:"pro", icon:"💎", title:"Pro: Performance Therapy",
+            text:`<p>Specialised performance anxiety coaching exists for exactly this.</p><h3>🌟 Specialist Options</h3><ul><li><strong>Performance psychologists</strong> — used by athletes, musicians, executives</li><li><strong>EMDR therapy</strong> — for anxiety rooted in past failures or trauma</li><li><strong>Hypnotherapy</strong> — some evidence for performance-specific anxiety</li><li><strong>Beta blockers</strong> — prescribed for physical symptoms (consult a doctor)</li></ul>`,
+            qr:["Find me a performance therapist","I want to know about EMDR","I need more info"] },
+        ]
+      },
+      health: {
+        label: "Health Anxiety",
+        levels: [
+          { level:"basic", icon:"🌱", title:"Basic: Break the Reassurance Loop",
+            text:`<p>Health anxiety often involves <strong>repeated checking</strong> — symptoms, Google, your body. This temporarily relieves anxiety but makes it worse long-term.</p><h3>🛑 Immediate Rule</h3><ul><li>No health Googling for 24 hours (set a phone blocker if needed)</li><li>Limit self-checking to <strong>once per day</strong> at a set time</li><li>Postpone your worry: <em>"I'll think about this at 7pm — not now"</em></li></ul><blockquote>Every time you check, your brain learns the threat is real. Breaking the cycle is the first cure.</blockquote>`,
+            qr:["I'm scared something is seriously wrong","I check symptoms constantly","Need more strategies"] },
+          { level:"intermediate", icon:"🌿", title:"Intermediate: Uncertainty Tolerance",
+            text:`<p>Health anxiety is fundamentally a struggle to tolerate <strong>uncertainty</strong>. The goal isn't to eliminate uncertainty — it's to survive it.</p><h3>🧘 Tolerance Exercises</h3><ul><li>List all the things in your life you're already okay with not knowing</li><li>Ask: <em>"If I had a 90% chance of being fine, would I still be this worried?"</em> (You'd say yes — that reveals it's not about information)</li><li>Practice sitting with the uncomfortable thought for 10 mins without checking</li></ul>`,
+            qr:["I still can't stop worrying","I need a doctor","This is helping!"] },
+          { level:"advanced", icon:"🔥", title:"Advanced: Interoceptive Exposure",
+            text:`<p>This is a clinical CBT technique: deliberately inducing the physical sensations you fear to desensitise your response.</p><h3>💡 Examples</h3><ul><li>Fear of fast heart rate → jog for 1 min and observe it</li><li>Fear of dizziness → spin in a chair and observe it</li><li>Fear of breathlessness → breathe through a straw for 1 min</li></ul><p>Each time you do this <em>intentionally</em>, your brain learns: <em>"This sensation is not dangerous."</em> The fear link weakens over time.</p>`,
+            qr:["I want a therapist","I can't do this alone","It's very severe"] },
+          { level:"pro", icon:"💎", title:"Pro: Clinical Support for Health Anxiety",
+            text:`<p>Severe health anxiety (sometimes called hypochondria or illness anxiety disorder) is a recognised condition with strong evidence-based treatments.</p><h3>🎯 Best Treatments</h3><ul><li><strong>CBT</strong> — specifically adapted for health anxiety</li><li><strong>ACT</strong> — learning to hold uncertainty with less distress</li><li><strong>SSRI medication</strong> — reduces the frequency and intensity of intrusive thoughts</li></ul><p>A GP or psychologist can diagnose and refer. You <em>deserve</em> targeted support.</p>`,
+            qr:["Help me find a professional","What is illness anxiety disorder?"] },
+        ]
+      },
+      general: {
+        label: "General Anxiety",
+        levels: [
+          { level:"basic", icon:"🌱", title:"Basic: 5-4-3-2-1 Grounding",
+            text:`<p>Anxiety pulls you into the future. Grounding pulls you back to <em>right now</em>.</p><h3>🌿 5-4-3-2-1 Technique</h3><ul><li><strong>5</strong> things you can <u>see</u></li><li><strong>4</strong> things you can <u>touch</u></li><li><strong>3</strong> things you can <u>hear</u></li><li><strong>2</strong> things you can <u>smell</u></li><li><strong>1</strong> thing you can <u>taste</u></li></ul><p>Do this slowly. The physical engagement interrupts the anxiety spiral.</p>`,
+            qr:["I need more help","What type is it?","This helped!"] },
+          { level:"intermediate", icon:"🌿", title:"Intermediate: Worry Scheduling",
+            text:`<p>Anxiety doesn't disappear when you try to suppress it — it grows. Instead, <strong>contain it</strong>.</p><h3>📅 Scheduled Worry Time</h3><ul><li>Set a 15-min daily "worry window" (e.g., 6pm every day)</li><li>When anxiety surfaces outside that time, write the worry down and <em>postpone it</em></li><li>At your worry window, review your list — many will feel less urgent</li><li>Problem-solve the actionable ones; accept the rest</li></ul><blockquote>You're not ignoring anxiety — you're putting it in its place.</blockquote>`,
+            qr:["My anxiety is constant","It's physical too","Need more strategies"] },
+          { level:"advanced", icon:"🔥", title:"Advanced: GAD & Metacognitive Therapy",
+            text:`<p>If anxiety is persistent and generalised, it may be <strong>Generalised Anxiety Disorder (GAD)</strong>. A key driver is <em>beliefs about worrying itself</em>.</p><h3>🧠 Metacognitive Beliefs</h3><ul><li><em>Positive:</em> <strong>"Worrying keeps me safe / prepared"</strong> — this keeps you stuck in the worry loop</li><li><em>Negative:</em> <strong>"I can't control my worrying"</strong> — this amplifies panic</li></ul><h3>✂️ Detached Mindfulness</h3><ul><li>Observe your worry as passing mental events — not facts, not commands</li><li>Don't engage, analyse, or suppress — just observe and let pass</li></ul>`,
+            qr:["I think I have GAD","I want therapy","Tell me more"] },
+          { level:"pro", icon:"💎", title:"Pro: Medication + Therapy Combination",
+            text:`<p>For chronic, debilitating anxiety — combined treatment is often most effective.</p><h3>💊 What to Know</h3><ul><li><strong>SSRIs/SNRIs</strong> — first-line medication, takes 4–6 weeks to fully work</li><li><strong>Buspirone</strong> — non-addictive anti-anxiety medication</li><li><strong>Avoid long-term benzodiazepines</strong> — can cause dependence</li></ul><h3>🧠 Best Therapies for Anxiety</h3><ul><li>CBT — most evidence-backed</li><li>ACT — acceptance-based, highly effective for GAD</li><li>Mindfulness-Based Cognitive Therapy (MBCT)</li></ul><p>Please see a GP or psychiatrist — you <em>don't</em> have to live like this.</p>`,
+            qr:["Find me a psychiatrist","What is an SSRI?","I'm ready to get help"] },
+        ]
+      }
+    },
+    subQR:["Social anxiety","Performance anxiety","Health anxiety","General / I'm not sure"]
+  },
+
+  // ─── SADNESS ───────────────────────────────────────────────────────
+  sadness: {
+    label: "sadness",
+    subtypes: {
+      grief: {
+        label: "Grief & Loss",
+        levels: [
+          { level:"basic", icon:"🌱", title:"Basic: Permission to Grieve",
+            text:`<p>Grief is not a problem to fix. It is <strong>love with nowhere to go</strong>. The most important thing right now is to let yourself feel it.</p><h3>💜 What Helps Right Now</h3><ul><li>You don't have to be okay. <em>Not being okay is okay.</em></li><li>Let yourself cry — it releases stress hormones</li><li>Accept support when offered — you don't have to do this alone</li><li>Eat, drink water, and sleep — grief depletes the body</li></ul><blockquote>Grief is the price of love, and it is worth every penny.</blockquote>`,
+            qr:["I feel numb","I can't function","It was recent","I need more support"] },
+          { level:"intermediate", icon:"🌿", title:"Intermediate: Navigating the Grief Process",
+            text:`<p>Grief is not a straight line — the stages (denial, anger, bargaining, depression, acceptance) can happen in any order, repeat, or overlap.</p><h3>🌊 What to Expect</h3><ul><li><strong>Grief waves</strong> — intense moments that pass; you are not going backwards</li><li><strong>Grief bursts</strong> — triggered by unexpected things (a song, a smell)</li><li><strong>Secondary losses</strong> — loss of identity, routine, future plans alongside the main loss</li></ul><h3>🌱 Gentle Support</h3><ul><li>Join a grief support group — shared understanding is deeply healing</li><li>Create a small ritual to honour what you lost</li></ul>`,
+            qr:["I'm stuck in one stage","I'm very angry","It's affecting my daily life","Need deeper help"] },
+          { level:"advanced", icon:"🔥", title:"Advanced: Complicated Grief",
+            text:`<p>If grief has been intense for 6+ months and is significantly impairing your life, it may be <strong>Prolonged Grief Disorder</strong> — and it responds well to treatment.</p><h3>🔍 Signs</h3><ul><li>Difficulty accepting the reality of the loss</li><li>Intense yearning or longing that doesn't diminish</li><li>Bitterness or anger about the loss remains severe</li><li>Difficulty engaging with memories or future plans</li></ul><h3>💙 Evidence-Based Treatment</h3><ul><li>Complicated Grief Therapy (CGT) — specialised, highly effective</li><li>EMDR — for grief involving trauma</li></ul>`,
+            qr:["I think I have this","I want therapy","I haven't been functioning for months"] },
+          { level:"pro", icon:"💎", title:"Pro: Grief Therapy & Support",
+            text:`<p>At this level, specialised grief support will help more than any self-help strategy.</p><h3>🌷 Your Options</h3><ul><li><strong>Grief counsellor or therapist</strong> — can hold space and guide processing</li><li><strong>Grief support groups</strong> (online or in-person) — GriefShare, local hospice programs</li><li><strong>Bereavement support lines</strong> in many countries offer free calls</li><li>If grief has led to depression, a psychiatrist can help with medication</li></ul><blockquote>You don't have to carry this alone. Asking for support is not weakness — it is wisdom.</blockquote>`,
+            qr:["Find me a grief counsellor","I'm having thoughts of self-harm","Thank you"] },
+        ]
+      },
+      loneliness: {
+        label: "Loneliness & Isolation",
+        levels: [
+          { level:"basic", icon:"🌱", title:"Basic: Start With One Connection",
+            text:`<p>Loneliness is incredibly painful — and it's more common than you think. <strong>You reaching out here is a brave first step.</strong></p><h3>🤍 Today, Just One Thing</h3><ul><li>Text or call <em>one person</em> from your past — even a short message matters</li><li>If that feels too hard: go somewhere public (café, park) and just be around people</li><li>Listen to a podcast with a warm host — parasocial connection genuinely reduces loneliness temporarily</li></ul><blockquote>One genuine connection is worth a hundred surface-level interactions.</blockquote>`,
+            qr:["I have no one to contact","I've lost all my friends","I moved somewhere new","Need more help"] },
+          { level:"intermediate", icon:"🌿", title:"Intermediate: Building Connection Intentionally",
+            text:`<p>Loneliness often persists because we wait for connection to happen — rather than <strong>creating the conditions for it</strong>.</p><h3>🌱 Structured Connection-Building</h3><ul><li>Join a class, club, or group based on a hobby — <em>shared activity</em> is the best connection catalyst</li><li>Volunteer — shared purpose creates rapid bonding</li><li>Apps like <code>Meetup.com</code> or <code>Bumble BFF</code> for non-romantic connection</li><li>Show up consistently — friendships form through <em>repeated exposure</em></li></ul>`,
+            qr:["I feel too awkward to connect","Online connection isn't enough","I've tried and it didn't work","Need deeper help"] },
+          { level:"advanced", icon:"🔥", title:"Advanced: Loneliness & Identity",
+            text:`<p>Deep, chronic loneliness often connects to a sense of being <strong>fundamentally different or unlovable</strong>. That belief — not circumstance — is what needs healing.</p><h3>🧠 Core Belief Work</h3><ul><li>Write down the story you tell yourself about <em>why</em> you're lonely</li><li>Challenge each part: <em>Is this fact or fear? Has anyone ever connected with me? Does one rejection mean all will reject?</em></li><li>Practise <strong>self-compassion</strong>: how would you speak to a lonely friend?</li></ul><blockquote>"You are not fundamentally unlovable. That is a wound speaking, not a truth."</blockquote>`,
+            qr:["I believe I'm unlovable","I want therapy","Still struggling badly"] },
+          { level:"pro", icon:"💎", title:"Pro: Clinical Loneliness & Depression Link",
+            text:`<p>Chronic loneliness has been linked to depression, inflammation, and impaired immune function. At this level, professional support is essential — not optional.</p><h3>🏥 What to Seek</h3><ul><li>Therapist for <strong>schema therapy</strong> or <strong>interpersonal therapy (IPT)</strong></li><li>Medication assessment if depression has co-developed</li><li>Structured social rehabilitation in some mental health programs</li></ul><p>You <em>deserve</em> connection. It may require professional help to rebuild the belief that you're worthy of it.</p>`,
+            qr:["I want to find a therapist","I'm feeling really hopeless","I need crisis support"] },
+        ]
+      },
+      breakup: {
+        label: "Heartbreak / Breakup",
+        levels: [
+          { level:"basic", icon:"🌱", title:"Basic: Survive Today",
+            text:`<p>Breakup pain activates the same brain regions as <em>physical pain</em>. What you're feeling is real, valid, and medically significant. Your only job right now is to <strong>survive today</strong>.</p><h3>💙 Immediate Care</h3><ul><li>Allow the emotion — crying is healing, not weakness</li><li>No contact with your ex for at least 2 weeks — every interaction reactivates the wound</li><li>Call a friend. You don't have to explain everything. Just say <em>"I need company."</em></li></ul><blockquote>You're not losing your mind. You're grieving. These are different things.</blockquote>`,
+            qr:["We share a living space","I keep contacting them","I feel like I'll never recover","Need more strategies"] },
+          { level:"intermediate", icon:"🌿", title:"Intermediate: Processing the Loss",
+            text:`<p>Once the acute pain settles slightly, there is important emotional work to do — not to rush healing, but to process it healthily.</p><h3>📓 Processing Exercises</h3><ul><li><strong>Unsent letter:</strong> Write everything you never said — don't send it</li><li><strong>Relationship audit:</strong> What did you love? What was hard? What did you learn?</li><li><strong>Reclaim your identity:</strong> List 10 things about you that existed before this relationship</li></ul><p>This isn't about blaming yourself or them — it's about <em>integration</em>.</p>`,
+            qr:["I'm obsessing over them","I want them back","I'm really struggling","It was toxic but I miss them"] },
+          { level:"advanced", icon:"🔥", title:"Advanced: Attachment & Patterns",
+            text:`<p>If you're cycling through the same type of relationship pain, your <strong>attachment style</strong> and <strong>relationship patterns</strong> may need examination.</p><h3>🔍 Patterns to Look For</h3><ul><li>Consistently attracted to unavailable people</li><li>Losing yourself completely in relationships</li><li>Fear of being alone driving you to stay or rush back</li><li>Relationships ending the same way repeatedly</li></ul><h3>🌱 The Work</h3><ul><li>Therapy specifically for attachment wounds gives deep, lasting results</li><li>Reading: <em>"Attached" by Levine & Heller</em> — the most practical guide on this</li></ul>`,
+            qr:["I have a pattern","I want therapy","Still in a lot of pain"] },
+          { level:"pro", icon:"💎", title:"Pro: When Grief Becomes Clinical Depression",
+            text:`<p>Breakup grief can tip into clinical depression, especially if: it's lasted 2+ months with no improvement, you're not functioning, or you have passive thoughts about not existing.</p><h3>🚨 Signs It's More Than Heartbreak</h3><ul><li>Unable to eat, sleep, or work for weeks</li><li>Complete loss of interest in all other areas of life</li><li>Thoughts of hopelessness about your entire future</li><li>Any thoughts of self-harm</li></ul><p><strong>Please reach out to a professional.</strong> Heartbreak-related depression is very treatable.</p>`,
+            qr:["I'm having dark thoughts","I need crisis support","Find me a therapist"] },
+        ]
+      },
+      general: {
+        label: "General Sadness / Feeling Low",
+        levels: [
+          { level:"basic", icon:"🌱", title:"Basic: Acknowledge & Self-Nurture",
+            text:`<p>Sometimes sadness doesn't have a clear reason — and that's completely okay. You don't need to justify your feelings.</p><h3>🌷 Basic Self-Care Right Now</h3><ul><li>Drink a glass of water — dehydration worsens mood significantly</li><li>Step outside for even 5 minutes — natural light affects serotonin</li><li>Put on music that matches your mood (not forces happiness)</li><li>Let yourself be sad without judging yourself for it</li></ul><blockquote>Sadness is information, not a malfunction. Your feelings are valid.</blockquote>`,
+            qr:["It's been going on for weeks","I don't know why I feel this way","I've lost interest in things","Need more help"] },
+          { level:"intermediate", icon:"🌿", title:"Intermediate: Behavioural Activation",
+            text:`<p>When we're sad, we withdraw — and withdrawal deepens sadness. <strong>Behavioural activation</strong> breaks this cycle with small, intentional actions.</p><h3>⚡ The Activation Ladder</h3><ul><li>List 5 activities that used to give you <em>pleasure or mastery</em></li><li>Rank them easiest → hardest</li><li>Do the <strong>easiest one today</strong> — even for 10 minutes</li><li>You don't need to feel like it first — action creates feeling, not the reverse</li></ul>`,
+            qr:["I can't find motivation","Everything feels pointless","I think it might be depression","Need deeper strategies"] },
+          { level:"advanced", icon:"🔥", title:"Advanced: Depression Screening",
+            text:`<p>Persistent sadness lasting 2+ weeks, especially with other symptoms, may indicate <strong>clinical depression</strong>.</p><h3>📋 PHQ-9 Symptom Check (last 2 weeks)</h3><ul><li>Little interest or pleasure in things?</li><li>Feeling down, depressed, or hopeless?</li><li>Sleep problems (too much or too little)?</li><li>Low energy or fatigue?</li><li>Difficulty concentrating?</li><li>Negative feelings about yourself?</li></ul><p>If you said yes to 5+ of these nearly every day — <strong>please speak to a doctor</strong>. Depression is a medical condition with excellent treatments.</p>`,
+            qr:["I said yes to most of these","I want to talk to a professional","I'm not sure if I'm depressed"] },
+          { level:"pro", icon:"💎", title:"Pro: Depression Treatment Options",
+            text:`<p>Clinical depression is highly treatable — but it usually requires professional support.</p><h3>💊 Treatment Landscape</h3><ul><li><strong>Psychotherapy:</strong> CBT, behavioural activation therapy, IPT — all highly effective</li><li><strong>Medication:</strong> SSRIs, SNRIs — work best combined with therapy</li><li><strong>Lifestyle:</strong> Exercise has antidepressant effect comparable to mild medication</li><li><strong>Light therapy:</strong> Especially for seasonal depression (SAD)</li></ul><p>Recovery is not only possible — it is <em>likely</em> with the right support. Please reach out to a GP or mental health professional today.</p>`,
+            qr:["How do I find a therapist?","What is an antidepressant?","I'm ready to get help","I need crisis support"] },
+        ]
+      }
+    },
+    subQR:["Grief / Loss","Loneliness","Heartbreak","General sadness / feeling low"]
+  },
+
+  // ─── FEELING GREAT ─────────────────────────────────────────────────
+  great: {
+    label: "positive feeling",
+    subtypes: {
+      energised: {
+        label: "Energised & Motivated",
+        levels: [
+          { level:"basic", icon:"🌟", title:"Ride the Wave 🌊",
+            text:`<p>You're in a great flow state — <strong>use it wisely!</strong></p><h3>⚡ Make the Most of This Energy</h3><ul><li>Tackle your most challenging task first while your mind is sharp</li><li>Start something you've been putting off — momentum is a gift</li><li>Schedule your next high-priority item for later this week while the motivation is fresh</li></ul><blockquote>Motivation is a visitor, not a resident. Capture it while it's here.</blockquote>` },
+          { level:"intermediate", icon:"🌿", title:"Build Sustainable Momentum",
+            text:`<p>Feeling energised is wonderful — now let's make this state more <em>consistent</em>.</p><h3>🔋 Momentum Habits</h3><ul><li>Identify what created this energy today — replicate those conditions</li><li>Set up a <strong>"trigger ritual"</strong> — same playlist, same time, same space = trained motivation</li><li>Track your energy levels across the week to find your peak hours</li></ul>` },
+          { level:"advanced", icon:"🔥", title:"Channel Into Your Bigger Goals",
+            text:`<p>Sustained motivation is about connecting daily actions to <strong>meaningful purpose</strong>.</p><h3>🎯 Purpose Mapping</h3><ul><li>Write your 1-year and 5-year vision — what matters most?</li><li>Break it into quarterly milestones, monthly targets, weekly actions</li><li>Review this when motivation dips — <em>reconnection to purpose restores drive</em></li></ul><blockquote>Energy without direction is just noise. Purpose gives it shape.</blockquote>` },
+          { level:"pro", icon:"💎", title:"Protect Your Wellbeing Ecosystem",
+            text:`<p>Peak performance is sustainable only when your <strong>foundations are maintained</strong>.</p><h3>🏗️ The Performance Ecosystem</h3><ul><li><strong>Recovery:</strong> Match effort with deliberate rest — athletes call this periodisation</li><li><strong>Relationships:</strong> Strong social bonds are the #1 predictor of long-term wellbeing</li><li><strong>Meaning:</strong> Regular reflection on what matters prevents burnout</li><li><strong>Body:</strong> Sleep, movement, nutrition underpin everything else</li></ul>` }
+        ]
+      },
+      peaceful: {
+        label: "Peaceful & Content",
+        levels: [
+          { level:"basic", icon:"🌟", title:"Savour This Moment 🕊️",
+            text:`<p>Contentment is often undervalued — but it's one of the most psychologically healthy states. <strong>Savour it.</strong></p><h3>🌿 Savouring Practice</h3><ul><li>Name 3 specific things that are good right now</li><li>Sit with the good feeling for 30 seconds — don't rush past it</li><li>Share it: tell someone what's going well</li></ul><blockquote>"Peace is not the absence of trouble. It is the presence of trust." Savour this.</blockquote>` },
+          { level:"intermediate", icon:"🌿", title:"Anchor This Feeling",
+            text:`<p>Peace is a state you can train yourself to return to more easily.</p><h3>⚓ Anchoring Technique</h3><ul><li>While feeling peaceful, press two fingers together and hold for 10 seconds</li><li>Later, when stressed, use the same physical gesture to <em>cue the state</em></li><li>This is an NLP anchoring technique — it genuinely creates a conditioned response over time</li></ul>` },
+          { level:"advanced", icon:"🔥", title:"Cultivate a Mindfulness Practice",
+            text:`<p>Peaceful contentment becomes more accessible when you have a daily practice.</p><h3>🧘 Building a Practice</h3><ul><li><strong>10 minutes daily</strong> of mindfulness meditation reduces amygdala reactivity measurably</li><li>Apps: <code>Insight Timer</code> (free), <code>Waking Up</code>, <code>Ten Percent Happier</code></li><li>Gratitude journalling (3 items/night) builds a positive neural baseline over 3–4 weeks</li></ul>` },
+          { level:"pro", icon:"💎", title:"Share Your Wellbeing",
+            text:`<p>When we're well, we have the capacity to help others — and that itself deepens our own wellbeing.</p><h3>💙 Prosocial Wellbeing</h3><ul><li>Acts of kindness increase our own serotonin as much as the recipient's</li><li>Mentor someone, volunteer, or simply check in on someone you care about</li><li>Connection is both the cause and result of lasting wellbeing</li></ul><blockquote>Happiness shared is happiness multiplied.</blockquote>` }
+        ]
+      },
+      grateful: {
+        label: "Feeling Grateful",
+        levels: [
+          { level:"basic", icon:"🌟", title:"Amplify Your Gratitude 🙏",
+            text:`<p>Gratitude is one of the most researched positive emotions. When you feel it, <strong>going deeper amplifies its benefits</strong>.</p><h3>📓 Gratitude Depth Practice</h3><ul><li>Instead of listing <em>what</em> you're grateful for — write <em>why</em> and <em>what it means to you</em></li><li>Tell someone directly that you're grateful for them — in detail</li><li>Imagine your life without the good things — it makes them more vivid</li></ul><blockquote>"Gratitude turns what we have into enough." — Aesop</blockquote>` },
+          { level:"intermediate", icon:"🌿", title:"Build a Gratitude Practice",
+            text:`<p>The most impactful thing you can do with gratitude is <strong>make it a daily habit</strong>.</p><h3>🏗️ Gratitude Architecture</h3><ul><li>5 minutes each morning: write 3 <em>specific</em> things (not generic "health, family")</li><li><strong>Gratitude letters</strong> — write a letter to someone who helped you and never heard it</li><li>Weekly: What went well? Why? What was your role in it?</li></ul>` },
+          { level:"advanced", icon:"🔥", title:"Gratitude as a World View",
+            text:`<p>Advanced gratitude practice transforms how you perceive <em>challenges</em>, not just blessings.</p><h3>🌊 Reframing Adversity</h3><ul><li>What has a past difficulty taught you?</li><li>What strength did you develop through a hard time?</li><li>Post-traumatic <em>growth</em> — many people find meaning and gratitude in past struggles</li></ul><p>This isn't toxic positivity — it's <em>integrative gratitude</em>, which acknowledges both pain and growth.</p>` },
+          { level:"pro", icon:"💎", title:"Gratitude as Connection",
+            text:`<p>The deepest form of gratitude involves others.</p><h3>💙 Expressed Gratitude</h3><ul><li>Visit or call someone you've never properly thanked</li><li>Research shows the <strong>gratitude visit</strong> is one of the single most powerful happiness interventions</li><li>Keep a relationship gratitude log — what do you appreciate about those close to you?</li></ul><blockquote>Unexpressed gratitude is like a gift never given. Say it out loud.</blockquote>` }
+        ]
+      },
+      accomplished: {
+        label: "Accomplished / Proud",
+        levels: [
+          { level:"basic", icon:"🌟", title:"Celebrate Your Win 🏆",
+            text:`<p>You did something worth feeling proud about. <strong>Don't rush past it.</strong></p><h3>🎉 Own It</h3><ul><li>Say it out loud or write it down: <em>"I am proud of myself for..."</em></li><li>Share it with someone who will celebrate with you — not everyone will, choose wisely</li><li>Treat yourself to something — small pleasures reinforce positive identity</li></ul><blockquote>You are allowed to feel genuinely good about what you did. You earned it.</blockquote>` },
+          { level:"intermediate", icon:"🌿", title:"Build on the Momentum",
+            text:`<p>Use the confidence from this win as a <strong>launch pad</strong>.</p><h3>🚀 The Confidence Compound Effect</h3><ul><li>Identify what skills or strengths this win demonstrated</li><li>Set a slightly bigger challenge that builds on this area</li><li>Update your self-concept: <em>"I am someone who can..."</em></li></ul>` },
+          { level:"advanced", icon:"🔥", title:"Reflect for Growth",
+            text:`<p>Peak performers review their wins as carefully as their failures.</p><h3>📊 After-Action Review</h3><ul><li>What worked? Why exactly?</li><li>What would you do differently?</li><li>What did this reveal about your strengths?</li><li>How can you apply this learning to a future challenge?</li></ul>` },
+          { level:"pro", icon:"💎", title:"Integrate Into Identity",
+            text:`<p>The most durable form of confidence comes from a stable, positive <strong>self-identity</strong> — not just individual achievements.</p><h3>🏗️ Identity Work</h3><ul><li>Write 5 character strengths this accomplishment reflected</li><li>Connect this to your larger narrative: <em>"I am someone who..."</em></li><li>Research <em>Values In Action (VIA) Character Strengths</em> — free assessment at <code>viacharacter.org</code></li></ul><blockquote>Your accomplishments are evidence of who you already are.</blockquote>` }
+        ]
+      }
+    },
+    subQR:["Energised & motivated","Peaceful & content","Feeling grateful","Accomplished / proud"]
+  },
+
+  // ─── COPING TIPS ───────────────────────────────────────────────────
+  coping: {
+    label: "coping",
+    subtypes: {
+      overwhelm: {
+        label: "Overwhelm / Too Much At Once",
+        levels: [
+          { level:"basic", icon:"🌱", title:"Basic: One Breath, One Thing",
+            text:`<p>Overwhelm happens when your brain perceives more demands than it has capacity to handle. The antidote is <strong>radical narrowing</strong>.</p><h3>🎯 The One-Thing Rule</h3><ul><li>Stop. Literally put everything down for 60 seconds</li><li>Ask: <em>"What is the ONE thing that most needs to happen today?"</em></li><li>Do only that. Everything else is background noise right now</li></ul><blockquote>You don't have to eat the whole elephant. One bite, one moment.</blockquote>` },
+          { level:"intermediate", icon:"🌿", title:"Intermediate: Triage & Offload",
+            text:`<p>Get it all out of your head and onto paper — your brain isn't built to hold everything simultaneously.</p><h3>📝 Mind Dump + Triage</h3><ul><li>Write every task, worry, and obligation onto paper — all of it</li><li>Mark each: <strong>Urgent+Important | Important | Delegate | Delete</strong></li><li>Only the first category gets your attention today</li><li>Schedule the "important" items; let go of the rest</li></ul>` },
+          { level:"advanced", icon:"🔥", title:"Advanced: Systemic Change",
+            text:`<p>If overwhelm is chronic, the problem isn't your coping — it's your <strong>system and boundaries</strong>.</p><h3>🏗️ Systems Audit</h3><ul><li>Where are you consistently over-committing?</li><li>Which commitments drain more than they give?</li><li>Practise the <em>hell yes or no rule</em>: if it's not a clear yes, it's a no</li><li>Build <strong>buffer time</strong> into your schedule — 20% free capacity changes everything</li></ul>` },
+          { level:"pro", icon:"💎", title:"Pro: Chronic Overwhelm = Burnout",
+            text:`<p>Persistent overwhelm without recovery is the definition of burnout — and it requires more than tips.</p><ul><li>Mandatory rest period (days or weeks)</li><li>Structural changes to workload or life demands</li><li>Therapy to address perfectionism, people-pleasing, or boundary issues</li><li>Medical assessment if physical symptoms are present</li></ul>` }
+        ]
+      },
+      procrastination: {
+        label: "Procrastination",
+        levels: [
+          { level:"basic", icon:"🌱", title:"Basic: The 2-Minute Start",
+            text:`<p>Procrastination is almost always about <strong>starting</strong>, not doing. The brain avoids the discomfort of beginning — not the task itself.</p><h3>⏱️ The 2-Minute Rule</h3><ul><li>Commit to doing the task for just <em>2 minutes</em></li><li>Set a timer. When it goes off, you can stop — but you usually won't want to</li><li>The <strong>Zeigarnik Effect</strong>: your brain wants to finish what it's started</li></ul><blockquote>You don't have to feel ready. You just have to start.</blockquote>` },
+          { level:"intermediate", icon:"🌿", title:"Intermediate: Why You're Procrastinating",
+            text:`<p>There are different <em>types</em> of procrastination with different solutions.</p><h3>🔍 Diagnose Your Type</h3><ul><li><strong>Fear of failure:</strong> Avoidance feels safer than risking judgment → Self-compassion + reframe mistakes as learning</li><li><strong>Perfectionism:</strong> Can't start unless it's perfect → "Good enough" standards; progress over perfection</li><li><strong>Overwhelm:</strong> Task feels too big → Break it into 20-min sub-tasks</li><li><strong>Boredom:</strong> Task feels pointless → Connect to a bigger purpose</li></ul>` },
+          { level:"advanced", icon:"🔥", title:"Advanced: Implementation Intentions",
+            text:`<p>The most evidence-backed procrastination intervention is <strong>implementation intentions</strong> — a simple "when-then" formula.</p><h3>📋 How It Works</h3><ul><li><em>"When [specific cue], I will [specific action] in [specific place]."</em></li><li>Example: <em>"When I sit down at my desk after lunch, I will open my report draft for 25 minutes."</em></li><li>Studies show this increases follow-through by 200–300%</li><li>Pair with a specific environment: same place = trained focus response</li></ul>` },
+          { level:"pro", icon:"💎", title:"Pro: ADHD & Executive Function",
+            text:`<p>If procrastination is <em>persistent, severe, and lifelong</em> — it may reflect executive function differences, including undiagnosed ADHD.</p><h3>🔍 Consider Assessment If</h3><ul><li>Procrastination occurs across all life areas, not just one</li><li>You have a pattern of starting many things and finishing few</li><li>Time blindness, hyperfocus, emotional dysregulation are also present</li><li>You've tried every strategy and nothing sticks</li></ul><p>A psychiatrist or psychologist can assess for ADHD. <strong>It's very treatable — and it changes lives.</strong></p>` }
+        ]
+      },
+      anger: {
+        label: "Anger & Frustration",
+        levels: [
+          { level:"basic", icon:"🌱", title:"Basic: Physical Discharge",
+            text:`<p>Anger is a physiological state — cortisol and adrenaline flood your body. You need to <strong>discharge it physically</strong> first.</p><h3>⚡ Immediate Physical Release</h3><ul><li>Go for a fast walk or run — even 5 minutes</li><li>Do 10 jumping jacks or push-ups</li><li>Clench every muscle in your body for 10 seconds, then release completely</li><li>Splash cold water on your face</li></ul><blockquote>You can't reason your way out of an emotion. Move the body first.</blockquote>` },
+          { level:"intermediate", icon:"🌿", title:"Intermediate: The Anger Audit",
+            text:`<p>Underneath most anger is a <strong>threatened value or unmet need</strong>.</p><h3>🔍 The Audit Questions</h3><ul><li>What exactly triggered this anger?</li><li>What <em>value</em> was violated? (fairness, respect, safety, autonomy)</li><li>What <em>need</em> is unmet? (to be heard, to be treated fairly)</li><li>What are you <em>actually</em> feeling beneath the anger? (hurt, fear, shame)</li></ul><p>Naming the need makes the path forward clearer — and often, less explosive.</p>` },
+          { level:"advanced", icon:"🔥", title:"Advanced: Cognitive Reappraisal",
+            text:`<p>Anger is amplified by <strong>interpretations</strong>, not just events. Changing the interpretation changes the emotion.</p><h3>🧠 Reappraisal Steps</h3><ul><li>State what happened factually: <em>"They didn't respond to my message."</em></li><li>Notice the interpretation: <em>"They don't respect me."</em></li><li>Generate alternatives: <em>"They might be busy, struggling, or it's not about me."</em></li><li>Ask: <em>"Which interpretation serves me better — and is there evidence it could be true?"</em></li></ul>` },
+          { level:"pro", icon:"💎", title:"Pro: Chronic Anger & Therapy",
+            text:`<p>If anger is a recurring pattern in your life — affecting relationships, work, or health — it deserves dedicated therapeutic attention.</p><h3>🌟 Effective Approaches</h3><ul><li><strong>Anger management therapy</strong> — structured, CBT-based</li><li><strong>Schema therapy</strong> — for anger rooted in childhood experiences</li><li><strong>Mindfulness-Based Stress Reduction (MBSR)</strong></li><li><strong>Medical check:</strong> Thyroid conditions, testosterone, and blood sugar can all affect anger levels</li></ul>` }
+        ]
+      },
+      motivation: {
+        label: "Lack of Motivation",
+        levels: [
+          { level:"basic", icon:"🌱", title:"Basic: Action Before Feeling",
+            text:`<p>The biggest motivation myth is that you have to <em>feel</em> motivated before acting. Science says the opposite: <strong>action creates motivation</strong>.</p><h3>⚡ Start Tiny</h3><ul><li>Do the task for just 5 minutes — don't decide if you'll continue, just start</li><li>The <em>activation energy</em> to start is the whole obstacle</li><li>Put on your shoes. Open the document. Fill the glass of water. Just the first physical step.</li></ul><blockquote>Don't wait for the feeling. Create it by moving.</blockquote>` },
+          { level:"intermediate", icon:"🌿", title:"Intermediate: Values-Based Motivation",
+            text:`<p>Motivation built on <em>should</em> is fragile. Motivation built on <em>meaning</em> is durable.</p><h3>🎯 Find the Why</h3><ul><li>Ask: <em>Why does this matter? What value does it serve?</em></li><li>Connect the task to a person or goal you care about</li><li>Reframe: not <em>"I have to go to the gym"</em> but <em>"I'm choosing this because I value my energy and health"</em></li></ul>` },
+          { level:"advanced", icon:"🔥", title:"Advanced: Environmental Design",
+            text:`<p>Willpower is finite. <strong>Environment design</strong> makes motivation automatic.</p><h3>🏗️ Design Your Environment</h3><ul><li>Put your workout clothes next to your bed</li><li>Keep your book on the kitchen table, not the shelf</li><li>Use a separate browser for work — signals brain into work mode</li><li>Reduce friction for good habits; increase it for distractions (delete apps, use app timers)</li></ul>` },
+          { level:"pro", icon:"💎", title:"Pro: Anhedonia — When Nothing Feels Worth It",
+            text:`<p>If nothing feels motivating or rewarding — not just one area but broadly — this is <em>anhedonia</em>, a core symptom of depression.</p><h3>🔍 Signs</h3><ul><li>Activities you used to love feel flat or joyless</li><li>Nothing feels worth looking forward to</li><li>Low energy that sleep doesn't fix</li></ul><p>This is a neurobiological change — not laziness, not failure. A doctor or therapist can help significantly. <strong>Please reach out.</strong></p>` }
+        ]
+      }
+    },
+    subQR:["I'm overwhelmed","I'm procrastinating","I'm angry / frustrated","I lack motivation"]
+  },
+
+  // ─── SLEEP ─────────────────────────────────────────────────────────
+  sleep: {
+    label: "sleep issues",
+    subtypes: {
+      insomnia: {
+        label: "Can't Fall Asleep",
+        levels: [
+          { level:"basic", icon:"🌱", title:"Basic: Wind-Down Routine",
+            text:`<p>Your brain needs a <strong>clear signal</strong> that it's time to sleep — it doesn't switch off on command.</p><h3>🌙 30-Minute Wind-Down Protocol</h3><ul><li>Dim all lights 30 minutes before bed — darkness triggers melatonin</li><li>No screens (phones, TV, laptop) — or use blue light glasses</li><li>Do one calming activity: reading a physical book, gentle stretching, warm shower</li><li>Keep your room cool: <strong>65–68°F / 18–20°C</strong> is the proven optimal sleep temperature</li><li>Write down tomorrow's to-do list — offloads the mental chatter</li></ul><blockquote>Sleep begins 8 hours before you lie down. Start building it earlier.</blockquote>`,
+            qr:["Still lying awake for hours","My mind races at night","I need more strategies","This helped a bit"] },
+          { level:"intermediate", icon:"🌿", title:"Intermediate: Sleep Restriction Therapy",
+            text:`<p>Counterintuitive but highly effective: <strong>sleep restriction</strong> builds sleep pressure and resets your drive to sleep.</p><h3>⏰ How It Works</h3><ul><li>Decide a fixed <strong>wake time</strong> (e.g., 7am) — do not deviate, including weekends</li><li>Initially only go to bed when you are <em>genuinely sleepy</em> — even if that's 1–2am</li><li>No naps during the day — you need to build sleep pressure</li><li>After 1 week, your sleep consolidates; move bedtime 15 mins earlier each week</li></ul><h3>💡 Mind Racing Fix</h3><ul><li>Keep a "worry dump" notepad by your bed — write thoughts out, then mentally close the tab</li><li>Try the <strong>military sleep method</strong>: relax face, drop shoulders, imagine a calm scene for 10s</li></ul>`,
+            qr:["I tried this, still can't sleep","It's anxiety keeping me awake","I need something stronger","This is helping!"] },
+          { level:"advanced", icon:"🔥", title:"Advanced: CBT-I (Gold Standard)",
+            text:`<p>CBT for Insomnia (CBT-I) is <em>more effective than sleep medication</em> long-term, with no side effects. It is the clinical gold standard.</p><h3>🧠 Core CBT-I Components</h3><ul><li><strong>Sleep diary</strong> — track sleep/wake times, quality, stress for 1 week</li><li><strong>Stimulus control</strong> — bed is for sleep only; leave bed if awake for 20+ minutes</li><li><strong>Cognitive restructuring</strong> — challenge catastrophic thoughts (<em>"I'll never function if I don't sleep"</em>)</li><li><strong>Relaxation training</strong> — PMR, guided imagery, autogenic training before bed</li></ul><h3>📱 Digital CBT-I</h3><ul><li><code>Sleepio</code> — digital CBT-I with strong clinical evidence</li><li><code>Somryst</code> — FDA-approved digital therapeutic for insomnia</li></ul>`,
+            qr:["Nothing is working","I've had insomnia for months","I want to see a doctor","This is really useful"] },
+          { level:"pro", icon:"💎", title:"Pro: Medical Assessment for Chronic Insomnia",
+            text:`<p>Chronic insomnia (3+ nights/week for 3+ months) warrants a medical investigation — there may be an underlying cause.</p><h3>🏥 Rule Out These Causes</h3><ul><li><strong>Sleep apnea</strong> — very common, very treatable, massively impairs sleep quality (ask your GP for a sleep study)</li><li><strong>Restless Leg Syndrome</strong> — causes urge to move legs at night; often iron-linked</li><li><strong>Thyroid disorders</strong> — both hypo and hyperthyroid disrupt sleep</li><li><strong>Anxiety / depression</strong> — sleep disturbance is often a primary symptom</li><li><strong>Chronic pain</strong> — may need its own assessment</li></ul><p>A GP can refer for a sleep study, relevant blood tests, and specialist support. <strong>You don't have to accept bad sleep as normal.</strong></p>`,
+            qr:["I want to see a sleep doctor","I think I have sleep apnea","Connect me with professional help"] },
+        ]
+      },
+      waking: {
+        label: "Waking Up During the Night",
+        levels: [
+          { level:"basic", icon:"🌱", title:"Basic: Don't Fight Being Awake",
+            text:`<p>Waking in the night is normal — most people do it 4–6 times without realising. The problem is when you <strong>become anxious about it</strong>, which makes it harder to fall back asleep.</p><h3>🌙 What To Do When You Wake</h3><ul><li>Do <strong>not</strong> check your phone or clock — time-watching amplifies anxiety</li><li>Lie still, breathe slowly, and tell yourself: <em>"This is normal. I'll drift off again."</em></li><li>Try the <strong>4-7-8 breath</strong>: inhale 4s, hold 7s, exhale 8s — repeat 4 times</li><li>Keep the room dark and don't turn on lights</li></ul><blockquote>Most wakings last only 1–5 minutes. What you do during them determines whether you sleep again.</blockquote>`,
+            qr:["I wake up 3–4 times a night","I can't fall back asleep","It's stress waking me","Need more strategies"] },
+          { level:"intermediate", icon:"🌿", title:"Intermediate: Sleep Architecture & Causes",
+            text:`<p>Frequent waking usually has a <strong>specific cause</strong> — finding it is the most efficient fix.</p><h3>🔍 Common Triggers</h3><ul><li><strong>Alcohol</strong> — disrupts sleep architecture in the second half of the night; even 1–2 drinks worsens waking</li><li><strong>Caffeine</strong> — has a 6-hour half-life; afternoon coffee affects 2am sleep</li><li><strong>Temperature</strong> — too warm = more waking; keep room at 18–20°C</li><li><strong>Full bladder</strong> — limit fluids after 7pm; check for underlying urinary issues</li><li><strong>Stress hormones</strong> — cortisol spikes at 2–4am; stress management helps this directly</li></ul>`,
+            qr:["I wake up anxious","I wake up to use the bathroom","I still don't know why","Need deeper help"] },
+          { level:"advanced", icon:"🔥", title:"Advanced: Stimulus Control & Sleep Consolidation",
+            text:`<p>If you wake frequently and lie in bed awake for long periods, the bed may have become <strong>associated with wakefulness</strong> rather than sleep. This can be re-trained.</p><h3>🔄 Reconditioning Protocol</h3><ul><li>If awake 20+ minutes: get out of bed and go to another dark, quiet room</li><li>Do something calm and boring (reading, gentle stretching) — no screens</li><li>Only return to bed when you feel drowsy again</li><li>This feels counterintuitive but <em>re-pairs your bed with sleep within 1–2 weeks</em></li></ul><h3>🧘 Mindfulness for Night Waking</h3><ul><li>Body scan meditation while lying still — systematically relax each body part</li><li>Apps: <code>Calm</code>, <code>Insight Timer</code> have dedicated "back to sleep" sessions</li></ul>`,
+            qr:["I'm exhausted from broken sleep","Could it be sleep apnea?","I want medical help"] },
+          { level:"pro", icon:"💎", title:"Pro: Medical Causes of Night Waking",
+            text:`<p>Persistent, unexplained waking warrants medical investigation — especially if accompanied by snoring, gasping, or daytime fatigue.</p><h3>🏥 Investigate These</h3><ul><li><strong>Obstructive Sleep Apnea (OSA)</strong> — breathing interruptions wake you; snoring is a key sign; CPAP is highly effective</li><li><strong>Nocturia</strong> — frequent night urination; can be prostate, kidney, cardiac, or medication-related</li><li><strong>Hypoglycaemia</strong> — blood sugar drops at night; common in diabetics</li><li><strong>Anxiety disorder / PTSD</strong> — hyperarousal keeps the nervous system active</li></ul><p>See your GP and ask for a <strong>sleep study referral</strong> if waking has persisted 3+ months.</p>`,
+            qr:["I snore and wake gasping","I want a sleep study","Find me a sleep specialist"] },
+        ]
+      },
+      tiredness: {
+        label: "Always Tired / No Energy",
+        levels: [
+          { level:"basic", icon:"🌱", title:"Basic: Energy Audit",
+            text:`<p>Feeling tired despite sleeping is frustrating — but it usually has a clear cause. Let's find yours.</p><h3>🔍 Quick Energy Audit</h3><ul><li><strong>How many hours are you actually sleeping?</strong> (Under 7 = sleep debt)</li><li><strong>What's your sleep quality like?</strong> (Do you wake often, snore, feel unrefreshed?)</li><li><strong>How much water do you drink?</strong> (Dehydration = major fatigue)</li><li><strong>What does your diet look like?</strong> (Sugar spikes followed by crashes = afternoon slump)</li></ul><h3>⚡ Immediate Energy Boosts</h3><ul><li>Drink 500ml of water first thing — dehydration upon waking is common</li><li>Get 10 minutes of morning sunlight — regulates your circadian clock</li><li>A 20-min nap (no longer!) can restore alertness without disrupting night sleep</li></ul><blockquote>Tiredness is information, not a character flaw. Let's decode it.</blockquote>`,
+            qr:["I sleep 8+ hours but still tired","I crash in the afternoons","It's been months of fatigue","Need more help"] },
+          { level:"intermediate", icon:"🌿", title:"Intermediate: Sleep Quality vs Sleep Quantity",
+            text:`<p>8 hours of poor-quality sleep can leave you more tired than 6 hours of deep, restorative sleep. <strong>Quality matters more than quantity.</strong></p><h3>🏗️ Improving Sleep Quality</h3><ul><li>Consistent wake time — even weekends — anchors your circadian rhythm</li><li>Avoid alcohol: it fragments deep sleep even if it helps you fall asleep initially</li><li>Eat your last meal 2–3 hours before bed — digestion disrupts deep sleep</li><li>Exercise regularly — even 20 mins improves slow-wave sleep by up to 75%</li></ul><h3>📊 Track It</h3><ul><li>Use a wearable (Fitbit, Garmin, Apple Watch) or app (<code>Sleep Cycle</code>) to understand your actual sleep stages</li></ul>`,
+            qr:["I have good habits but still tired","Could something medical be wrong?","I need deeper help"] },
+          { level:"advanced", icon:"🔥", title:"Advanced: Circadian Rhythm Reset",
+            text:`<p>Persistent fatigue often reflects a <strong>misaligned circadian rhythm</strong> — your internal body clock is out of sync with your lifestyle.</p><h3>⏰ Circadian Reset Protocol</h3><ul><li><strong>Morning light</strong> — 10–20 mins of bright outdoor light within 1 hour of waking (most powerful circadian signal)</li><li><strong>Consistent sleep/wake times</strong> — within 30 minutes, every single day</li><li><strong>Avoid bright light 2 hours before bed</strong> — use dim, warm lighting only</li><li><strong>Time your meals</strong> — eating late pushes your internal clock back</li></ul><p>A consistent schedule for 2 weeks typically produces noticeable improvement in energy levels.</p>`,
+            qr:["I've tried this and still tired","I think it's a medical issue","I want to see a doctor"] },
+          { level:"pro", icon:"💎", title:"Pro: Medical Causes of Chronic Fatigue",
+            text:`<p>Fatigue lasting 3+ months with no clear cause requires medical investigation — it is a symptom, not a condition itself.</p><h3>🏥 Rule Out These Conditions</h3><ul><li><strong>Anaemia</strong> — iron or B12 deficiency; very common, very treatable</li><li><strong>Hypothyroidism</strong> — underactive thyroid causes persistent fatigue, weight gain, brain fog</li><li><strong>Sleep Apnea</strong> — poor oxygenation during sleep prevents restorative sleep</li><li><strong>Chronic Fatigue Syndrome (ME/CFS)</strong> — a genuine medical condition, not laziness</li><li><strong>Diabetes / blood sugar dysregulation</strong></li><li><strong>Depression</strong> — fatigue is often its most prominent symptom</li></ul><p>A blood panel from your GP can rule out most of these quickly. <strong>Please don't suffer in silence.</strong></p>`,
+            qr:["I think I have thyroid issues","I want blood tests","I think it might be depression","Find me a doctor"] },
+        ]
+      },
+      nightmares: {
+        label: "Nightmares / Disturbed Sleep",
+        levels: [
+          { level:"basic", icon:"🌱", title:"Basic: Immediate Post-Nightmare Recovery",
+            text:`<p>Waking from a nightmare leaves your body in a <strong>genuine stress response</strong> — heart racing, adrenaline elevated. Here's how to recover quickly.</p><h3>🌙 Right After Waking</h3><ul><li>Ground yourself immediately: say your name, today's date, where you are</li><li>Turn on a low light briefly — visual confirmation that you're safe</li><li>Do 4-7-8 breathing until your heart rate settles</li><li>Touch a physical object (pillow, wall) — texture signals safety to the nervous system</li></ul><h3>📓 Morning Practice</h3><ul><li>Write the nightmare down — it reduces its emotional charge</li><li>Rewrite the ending as something safe or neutral — your brain processes both as real</li></ul><blockquote>A nightmare cannot hurt you. It is your mind processing — not predicting.</blockquote>`,
+            qr:["I have recurring nightmares","I think it's related to trauma","I dread going to sleep","Need more strategies"] },
+          { level:"intermediate", icon:"🌿", title:"Intermediate: Image Rehearsal Therapy (IRT)",
+            text:`<p>Image Rehearsal Therapy is a highly effective, evidence-based technique for reducing recurring nightmares.</p><h3>🔄 How IRT Works</h3><ul><li>During the day (not before bed), recall a recurring nightmare</li><li>Rewrite it with a <em>different, positive or neutral ending</em> in as much detail as possible</li><li>Rehearse the new version mentally — 10–20 minutes daily</li><li>Over 1–2 weeks, the brain begins to replace the old nightmare pattern with the new one</li></ul><h3>💡 Also Helpful</h3><ul><li>Avoid scary/disturbing content (news, movies, games) 2 hours before bed</li><li>Establish a calming pre-sleep ritual — signals safety to the nervous system</li></ul>`,
+            qr:["I think it's PTSD-related","The nightmares are about a specific event","I need professional help","This helped a bit"] },
+          { level:"advanced", icon:"🔥", title:"Advanced: Trauma & Nightmare Connection",
+            text:`<p>Recurring nightmares, especially those replaying specific events, are often a sign that <strong>unprocessed trauma</strong> is being worked through during sleep.</p><h3>🔍 Understanding the Link</h3><ul><li>Trauma activates the amygdala — the brain's threat centre — even during sleep</li><li>The hippocampus struggles to contextualise traumatic memories as "past" — they feel present</li><li>This is not a character weakness; it is how human memory works under threat conditions</li></ul><h3>🌱 What Helps Beyond Self-Help</h3><ul><li><strong>EMDR therapy</strong> — most evidence-backed treatment for trauma nightmares</li><li><strong>Prazosin</strong> — a medication prescribed specifically for PTSD-related nightmares</li><li><strong>Trauma-focused CBT</strong> — processes the underlying memories</li></ul>`,
+            qr:["I have PTSD","I want trauma therapy","I need to see a doctor about medication"] },
+          { level:"pro", icon:"💎", title:"Pro: PTSD & Clinical Sleep Treatment",
+            text:`<p>If nightmares are severe, frequent, and linked to a traumatic experience — this is likely <strong>Post-Traumatic Stress Disorder (PTSD)</strong>, which is a clinical diagnosis with excellent treatments.</p><h3>🏥 Evidence-Based Treatments</h3><ul><li><strong>EMDR</strong> (Eye Movement Desensitisation & Reprocessing) — dramatically reduces nightmare frequency</li><li><strong>Prolonged Exposure (PE) therapy</strong> — processes trauma memories safely</li><li><strong>Cognitive Processing Therapy (CPT)</strong></li><li><strong>Medication:</strong> Prazosin for nightmares; SSRIs for PTSD symptoms broadly</li></ul><p>PTSD is <em>highly treatable</em>. Many people achieve full recovery with proper support. Please reach out to a mental health professional. 💙</p>`,
+            qr:["Find me a trauma therapist","What is EMDR?","I need crisis support","I'm ready to get help"] },
+        ]
+      }
+    },
+    subQR:["Can't fall asleep","Waking up during the night","Always tired / no energy","Nightmares / disturbed sleep"]
+  }
+};
+
+// ── Conversation state ────────────────────────────────────────────────
+let state = {
+  topic: null,       // e.g. 'stress'
+  subtype: null,     // e.g. 'work'
+  levelIndex: 0,     // 0–3
+  awaitingSubtype: false,
+  awaitingTopic: false
+};
+
+// ── Pattern matcher ───────────────────────────────────────────────────
+function detectTopic(input) {
+  const t = input.toLowerCase();
+  if (/stress|stressed|overwhelmed|too much|burnt out|burnout|pressure/i.test(t)) return 'stress';
+  if (/anxi|panic|nervous|worry|worried|fear|afraid|dread/i.test(t)) return 'anxiety';
+  if (/sad|depressed|depression|unhappy|miserable|hopeless|down|low|cry|grief|griev|loss|lost|lonely|alone|heartbreak|breakup|broke up/i.test(t)) return 'sadness';
+  if (/great|amazing|wonderful|happy|joy|excit|good|fantastic|content|peaceful|grateful|proud|accomplished/i.test(t)) return 'great';
+  if (/coping|cope|overwhelm|procrastin|motiv|anger|angry|frustrat|tip|advice|what can i do|help me|strategy/i.test(t)) return 'coping';
+  if (/sleep|insomnia|can't sleep|tired|exhausted|fatigue/i.test(t)) return 'sleep';
+  return null;
+}
+
+function detectSubtype(input, topic) {
+  const t = input.toLowerCase();
+  const ds = DATASET[topic];
+  if (!ds) return null;
+  const keys = Object.keys(ds.subtypes);
+  // Map keywords to subtype keys
+  const keyMaps = {
+    stress:   { work:'work', academic:'work', study:'work', job:'work', career:'work', relationship:'relationship', partner:'relationship', financial:'financial', money:'financial', debt:'financial', general:'general' },
+    anxiety:  { social:'social', people:'social', crowd:'social', performance:'performance', exam:'performance', presentation:'performance', health:'health', illness:'health', sick:'health', general:'general' },
+    sadness:  { grief:'grief', loss:'grief', died:'grief', death:'grief', loneli:'loneliness', alone:'loneliness', isolated:'loneliness', heartbreak:'breakup', breakup:'breakup', 'broke up':'breakup', general:'general', low:'general' },
+    great:    { energi:'energised', motiv:'energised', peaceful:'peaceful', calm:'peaceful', grateful:'grateful', thankful:'grateful', accomplish:'accomplished', proud:'accomplished', win:'accomplished' },
+    coping:   { overwhelm:'overwhelm', procrastin:'procrastination', anger:'anger', angry:'anger', frustrat:'anger', motiv:'motivation' },
+    sleep:    { insomnia:'insomnia', asleep:'insomnia', sleep:'insomnia' }
+  };
+  const map = keyMaps[topic] || {};
+  for (const [kw, sub] of Object.entries(map)) {
+    if (t.includes(kw) && keys.includes(sub)) return sub;
+  }
+  // check quick reply direct match
+  for (const key of keys) {
+    if (t.includes(key)) return key;
+  }
+  return null;
+}
+
+// ── Render helpers ─────────────────────────────────────────────────────
+const LEVEL_META = {
+  basic:        { label:'Basic',        color:'level-basic',        icon:'🌱', order:0 },
+  intermediate: { label:'Intermediate', color:'level-intermediate', icon:'🌿', order:1 },
+  advanced:     { label:'Advanced',     color:'Advanced',           icon:'🔥', order:2 },
+  pro:          { label:'Pro',          color:'level-pro',          icon:'💎', order:3 },
+  consult:      { label:'See a Professional', color:'level-consult', icon:'🏥', order:4 },
+};
+
+function progressHTML(levelIndex, totalLevels) {
+  const stages = ['Basic','Intermediate','Advanced','Pro'];
+  const display = stages.slice(0, totalLevels);
+  let html = '<div class="progress-bar">';
+  display.forEach((s, i) => {
+    const cls = i < levelIndex ? 'done' : i === levelIndex ? 'active' : '';
+    html += `<div class="prog-step ${cls}"><div class="prog-dot"></div>${s}</div>`;
+    if (i < display.length - 1) html += '<div class="prog-sep"></div>';
+  });
+  html += '</div>';
+  return html;
+}
+
+function levelBadge(lvl) {
+  const m = LEVEL_META[lvl] || LEVEL_META.basic;
+  return `<div class="level-badge ${m.color}">${m.icon} ${m.label}</div>`;
+}
+
+function buildLevelResponse(topic, subtype, levelIndex) {
+  const ds = DATASET[topic];
+  if (!ds || !ds.subtypes[subtype]) return null;
+  const levels = ds.subtypes[subtype].levels;
+  if (levelIndex >= levels.length) return null;
+  const lvl = levels[levelIndex];
+  const totalLevels = levels.length;
+
+  let html = progressHTML(levelIndex, totalLevels);
+  html += levelBadge(lvl.level);
+  html += `<h2>${lvl.icon} ${lvl.title}</h2>`;
+  html += lvl.text;
+
+  const isLast = levelIndex === totalLevels - 1;
+  const qr = lvl.qr || [];
+
+  return { html, isLast, qr, sources: lvl.sources };
+}
+
+// ── DOM ────────────────────────────────────────────────────────────────
+const msgContainer = document.getElementById('messages');
+const userInput    = document.getElementById('userInput');
+const sendBtn      = document.getElementById('sendBtn');
+
+function scrollBottom() { msgContainer.scrollTop = msgContainer.scrollHeight; }
+
+function appendUserMsg(text) {
+  const row = document.createElement('div');
+  row.className = 'msg-row user';
+  row.innerHTML = `<div class="bubble user-bubble">${escapeHtml(text)}</div>`;
+  msgContainer.appendChild(row);
+  scrollBottom();
+}
+
+function showTyping() {
+  const row = document.createElement('div');
+  row.className = 'msg-row bot'; row.id = 'typing-row';
+  row.innerHTML = `<div class="bot-avatar">🧠</div><div class="typing-bubble"><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;
+  msgContainer.appendChild(row); scrollBottom();
+  return row;
+}
+function removeTyping() { const t=document.getElementById('typing-row'); if(t)t.remove(); }
+
+function appendBotMsg({html, qr=[], sources=[], showNext=false, nextLabel='', isConsult=false}) {
+  const row = document.createElement('div');
+  row.className = 'msg-row bot';
+  let inner = `<div class="bot-avatar">🧠</div><div>`;
+  inner += `<div class="bubble bot-bubble">${html}</div>`;
+
+  if (qr.length) {
+    inner += `<div class="quick-replies">` + qr.map(q=>`<span class="qr-chip" data-msg="${q}">${q}</span>`).join('') + `</div>`;
+  }
+  if (showNext && !isConsult) {
+    inner += `<div class="next-level-wrap"><button class="next-level-btn" id="next-level-btn">⬆️ ${nextLabel} — try next level</button></div>`;
+  }
+  if (sources && sources.length) {
+    inner += `<div class="source-chips">` + sources.map(s=>`<span class="source-chip"><svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2zm1 17.93V18a1 1 0 00-2 0v1.93A8.001 8.001 0 014.07 13H6a1 1 0 000-2H4.07A8.001 8.001 0 0111 4.07V6a1 1 0 002 0V4.07A8.001 8.001 0 0119.93 11H18a1 1 0 000 2h1.93A8.001 8.001 0 0113 19.93z"/></svg>${s}</span>`).join('') + `</div>`;
+  }
+  inner += `</div>`;
+  row.innerHTML = inner;
+  msgContainer.appendChild(row); scrollBottom();
+
+  row.querySelectorAll('.qr-chip').forEach(chip => {
+    chip.addEventListener('click', () => sendMessage(chip.dataset.msg));
+  });
+  const nb = document.getElementById('next-level-btn');
+  if (nb) {
+    nb.addEventListener('click', () => {
+      nb.closest('.next-level-wrap').remove();
+      escalateLevel();
+    });
+  }
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── Level escalation ──────────────────────────────────────────────────
+async function escalateLevel() {
+  const ds = DATASET[state.topic];
+  const levels = ds.subtypes[state.subtype].levels;
+  state.levelIndex++;
+
+  if (state.levelIndex >= levels.length) {
+    // Show consult
+    showTypingThen(() => {
+      appendBotMsg({
+        html: CONSULT_LEVEL.text,
+        sources: CONSULT_LEVEL.sources,
+        qr:["Start over","I feel better now","Thank you ClayBot"],
+        showNext: false,
+        isConsult: true
+      });
+    });
+    return;
+  }
+
+  const result = buildLevelResponse(state.topic, state.subtype, state.levelIndex);
+  if (!result) return;
+
+  showTypingThen(() => {
+    const nextLvl = state.levelIndex + 1 < levels.length ? levels[state.levelIndex+1].level : 'consult';
+    const nextMeta = LEVEL_META[nextLvl] || LEVEL_META.consult;
+    appendBotMsg({
+      html: result.html,
+      qr: result.qr,
+      sources: result.sources,
+      showNext: true,
+      nextLabel: `${nextMeta.icon} ${nextMeta.label}`,
+    });
+  });
+}
+
+function showTypingThen(cb, delay) {
+  showTyping();
+  setTimeout(() => { removeTyping(); cb(); }, delay || 900 + Math.random()*500);
+}
+
+// ── Main respond logic ─────────────────────────────────────────────────
+async function respond(input) {
+  const t = input.toLowerCase().trim();
+
+  // Crisis override
+  if (/suicid|hurt myself|self.harm|end my life|die|no reason to live|want to die/i.test(t)) {
+    showTypingThen(() => appendBotMsg({
+      html:`<h2>Please reach out right now 🆘</h2><p>I'm very concerned about you. <strong>Your life matters.</strong></p><ul><li><strong>India:</strong> iCall <code>9152987821</code> | Vandrevala <code>1860-2662-345</code></li><li><strong>US:</strong> Call or text <code>988</code></li><li><strong>UK:</strong> Samaritans <code>116 123</code></li><li><strong>International:</strong> <code>befrienders.org</code></li></ul><blockquote>Please reach out to one of these now. You don't have to face this alone. 💙</blockquote>`,
+      qr:["I'm safe but struggling","I need to talk more"],
+      sources:["befrienders.org","988lifeline.org"]
+    })); return;
+  }
+
+  // Start over / reset
+  if (/start over|reset|new topic|different topic|back to start/i.test(t)) {
+    state = { topic:null, subtype:null, levelIndex:0, awaitingSubtype:false, awaitingTopic:false };
+    showTypingThen(() => appendBotMsg({
+      html:`<h2>Let's start fresh 🌿</h2><p>What would you like to check in about today?</p>`,
+      qr:["I'm stressed","I'm anxious","I'm sad","I'm feeling great","I need coping tips","I can't sleep"]
+    })); return;
+  }
+
+  // If awaiting subtype selection
+  if (state.awaitingSubtype && state.topic) {
+    const sub = detectSubtype(input, state.topic);
+    const ds = DATASET[state.topic];
+    if (sub && ds.subtypes[sub]) {
+      state.subtype = sub;
+      state.levelIndex = 0;
+      state.awaitingSubtype = false;
+      const result = buildLevelResponse(state.topic, state.subtype, 0);
+      const levels = ds.subtypes[state.subtype].levels;
+      const nextLvl = 1 < levels.length ? levels[1].level : 'consult';
+      const nextMeta = LEVEL_META[nextLvl];
+      showTypingThen(() => appendBotMsg({
+        html: result.html,
+        qr: result.qr || [],
+        sources: result.sources,
+        showNext: true,
+        nextLabel: `${nextMeta.icon} ${nextMeta.label}`,
+      }));
+      return;
     }
+    // didn't match, prompt again
+    showTypingThen(() => appendBotMsg({
+      html:`<p>Could you pick one of the options below so I can give you the most targeted help? 🙏</p>`,
+      qr: ds.subQR
+    }));
+    return;
+  }
 
-    function addUserMessage(text) {
-      const row = document.createElement('div');
-      row.className = 'message-row user-row';
-      row.innerHTML = `<div><div class="message-bubble user-bubble">${esc(text)}</div><span class="msg-time">${getTime()}</span></div>`;
-      messagesEl.appendChild(row); scrollBottom();
+  // Detect topic from fresh message
+  const topic = detectTopic(input);
+  if (topic) {
+    state.topic = topic;
+    state.levelIndex = 0;
+    state.awaitingSubtype = true;
+
+    // Try to also detect subtype in same message
+    const sub = detectSubtype(input, topic);
+    const ds = DATASET[topic];
+
+    if (sub && ds.subtypes[sub]) {
+      state.subtype = sub;
+      state.awaitingSubtype = false;
+      const result = buildLevelResponse(topic, sub, 0);
+      const levels = ds.subtypes[sub].levels;
+      const nextLvl = 1 < levels.length ? levels[1].level : 'consult';
+      const nextMeta = LEVEL_META[nextLvl];
+      showTypingThen(() => appendBotMsg({
+        html: result.html,
+        qr: result.qr || [],
+        sources: result.sources,
+        showNext: true,
+        nextLabel: `${nextMeta.icon} ${nextMeta.label}`,
+      }));
+    } else {
+      // Ask for subtype
+      const topicLabels = {
+        stress:"stressed", anxiety:"anxious", sadness:"sad or low",
+        great:"great", coping:"looking for coping strategies", sleep:"having sleep issues"
+      };
+      showTypingThen(() => appendBotMsg({
+        html:`<h2>I hear you 💙</h2><p>It sounds like you're feeling <strong>${topicLabels[topic]||topic}</strong>. To give you the most relevant, personalised support — can you tell me a bit more about what type?</p>`,
+        qr: ds.subQR
+      }));
     }
+    return;
+  }
 
-    function addErrorMessage(text) {
-      const row = document.createElement('div');
-      row.className = 'message-row bot-row';
-      row.innerHTML = `<div class="bot-avatar-sm">${botSVG}</div><div><div class="message-bubble bot-bubble error-bubble">${esc(text)}</div><span class="msg-time">${getTime()}</span></div>`;
-      messagesEl.appendChild(row); scrollBottom();
-    }
+  // Escalation phrases
+  if (/not helping|need more|something else|different|still struggling|didn't work|doesn't work/i.test(t) && state.topic && state.subtype) {
+    escalateLevel(); return;
+  }
 
-    function showTyping(label='thinking') { typingLabel.textContent=label; typingEl.style.display='flex'; scrollBottom(); }
-    function hideTyping() { typingEl.style.display='none'; }
-    function scrollBottom() { requestAnimationFrame(()=>{ messagesEl.scrollTop=messagesEl.scrollHeight; }); }
-    function setBusy(v) { busy=v; inputEl.disabled=v; sendBtn.disabled=v; }
+  // "I feel better" / "this helped" — positive closure
+  if (/feel better|helped|thank|great advice|this worked|i'm okay now|i'm good/i.test(t)) {
+    state = { topic:null, subtype:null, levelIndex:0, awaitingSubtype:false };
+    showTypingThen(() => appendBotMsg({
+      html:`<p>That genuinely makes me happy to hear! 🌟 You showed up for yourself today — <strong>that matters.</strong></p><p>Remember: <em>checking in with yourself regularly is one of the most powerful things you can do.</em> I'm always here if you need to talk. 💙</p>`,
+      qr:["Check in again","I have another topic","Thank you, goodbye!"]
+    }));
+    return;
+  }
 
-    // ── Gemini API call ───────────────────────────────────
-    async function askClaybot(userText) {
-      // Build Gemini contents array from history + new message
-      history.push({ role:'user', parts:[{ text: userText }] });
-      setBusy(true); showTyping('thinking');
+  // Greeting
+  if (/\bhi\b|\bhello\b|\bhey\b|\bgreetings\b|\bstart\b/i.test(t)) {
+    showTypingThen(() => appendBotMsg({
+      html:`<h2>Welcome to ClayBot 🧠</h2><p>I'm your <strong>Mental Health Check-in Bot</strong> — a safe, judgment-free space. I'll meet you where you are with <em>step-by-step support</em> from basic through to advanced strategies.</p><blockquote>If one level doesn't help enough, we simply go deeper — together. 💙</blockquote><p>How are you feeling today?</p>`,
+      qr:["I'm stressed","I'm anxious","I'm sad","I'm feeling great","I need coping tips","I can't sleep"]
+    })); return;
+  }
 
-      try {
-        const body = {
-          system_instruction: { parts:[{ text: SYSTEM_INSTRUCTION }] },
-          contents: history,
-          tools: [{ google_search: {} }],   // Free Google Search grounding
-          generation_config: { max_output_tokens: 1024, temperature: 0.7 }
-        };
+  // Fallback
+  showTypingThen(() => appendBotMsg({
+    html:`<p>I'm here for you 💙 Could you share a little more about how you're feeling? I can offer step-by-step support for each of these:</p>`,
+    qr:["I'm stressed","I'm anxious","I'm sad","I'm feeling great","I need coping tips","I can't sleep"]
+  }));
+}
 
-        const res = await fetch(`${API_BASE}:generateContent?key=${API_KEY}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Referer': 'https://gagan-a-ayi.github.io/claybot.github.io/'
-          },
-          body: JSON.stringify(body)
-        });
+async function sendMessage(text) {
+  const msg = (text || userInput.value).trim();
+  if (!msg) return;
+  userInput.value = '';
+  userInput.style.height = 'auto';
+  appendUserMsg(msg);
+  await respond(msg);
+}
 
-        if (!res.ok) {
-          const err = await res.json().catch(()=>({}));
-          if (res.status === 400 && err.error?.message?.includes('API_KEY')) {
-            hideTyping(); setBusy(false); history.pop();
-            addErrorMessage('Invalid API key. Click the 🔑 icon in the header to update it.'); return;
-          }
-          if (res.status === 429) {
-            hideTyping(); setBusy(false); history.pop();
-            addErrorMessage('Rate limit reached. Please wait a moment and try again.'); return;
-          }
-          throw new Error(err.error?.message || `HTTP ${res.status}`);
-        }
+sendBtn.addEventListener('click', () => sendMessage());
+userInput.addEventListener('keydown', e => { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();} });
+userInput.addEventListener('input', () => { userInput.style.height='auto'; userInput.style.height=Math.min(userInput.scrollHeight,120)+'px'; });
 
-        const data = await res.json();
-        const candidate = data.candidates?.[0];
-        if (!candidate) throw new Error('No response from Gemini.');
-
-        // Extract text
-        const text = candidate.content?.parts?.filter(p=>p.text).map(p=>p.text).join('\n').trim()
-          || 'I could not generate a response. Please try again.';
-
-        // Extract grounding sources
-        const sources = [];
-        const chunks = candidate.groundingMetadata?.groundingChunks || [];
-        for (const chunk of chunks) {
-          if (chunk.web?.uri) sources.push({ uri: chunk.web.uri, title: chunk.web.title || '' });
-        }
-
-        // Save assistant turn to history
-        history.push({ role:'model', parts:[{ text }] });
-        hideTyping();
-        addBotMessage(text, sources);
-
-      } catch(err) {
-        console.error(err); hideTyping();
-        addErrorMessage(`Something went wrong: ${err.message}`);
-        history.pop();
-      } finally { setBusy(false); inputEl.focus(); }
-    }
-
-    // ── Send ─────────────────────────────────────────────
-    function sendMessage() {
-      if (busy) return;
-      const text = inputEl.value.trim(); if (!text) return;
-      sendBtn.classList.remove('bounce'); void sendBtn.offsetWidth; sendBtn.classList.add('bounce');
-      setTimeout(()=>sendBtn.classList.remove('bounce'), 380);
-      addUserMessage(text); inputEl.value=''; askClaybot(text);
-    }
-
-    sendBtn.addEventListener('click', sendMessage);
-    inputEl.addEventListener('keydown', e=>{ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();} });
-
-    // ── Boot ─────────────────────────────────────────────
-    loadSavedKey();
-  </script>
+// Welcome on load
+window.addEventListener('load', () => {
+  appendBotMsg({
+    html:`<h2>Hey there! I'm ClayBot 🧠</h2><p>Your personal <strong>Mental Health Check-in Bot</strong>. I don't just give one generic answer — I give you <em>personalised, progressive support</em>:</p><ul><li>🌱 <strong>Basic</strong> — quick, immediate relief</li><li>🌿 <strong>Intermediate</strong> — structured strategies</li><li>🔥 <strong>Advanced</strong> — deeper work</li><li>💎 <strong>Pro</strong> — high-intensity tools</li><li>🏥 <strong>Professional help</strong> — if more support is needed</li></ul><p>How are you feeling today?</p>`,
+    qr:["I'm stressed","I'm anxious","I'm sad / feeling low","I'm feeling great","I need coping tips","I can't sleep"]
+  });
+});
+</script>
 </body>
 </html>
