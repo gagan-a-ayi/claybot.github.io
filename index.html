@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Claybot Pro — AI + Internet</title>
+  <meta name="description" content="Claybot Pro — AI assistant with real-time web search" />
+  <meta name="theme-color" content="#0f0f1a" />
+  <title>Claybot Pro</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -16,14 +18,10 @@
       --cyan:       #06b6d4;
       --cyan-l:     #67e8f9;
       --emerald:    #10b981;
-      --amber:      #f59e0b;
       --rose:       #f43f5e;
       --violet:     #7c3aed;
       --bg:         #0f0f1a;
       --surface:    #16162a;
-      --surface-2:  #1e1e36;
-      --glass:      rgba(255,255,255,0.06);
-      --glass-b:    rgba(255,255,255,0.10);
       --text:       #e2e8f0;
       --text-dim:   #94a3b8;
       --border:     rgba(255,255,255,0.10);
@@ -41,29 +39,87 @@
       padding: 16px; overflow: hidden;
     }
 
-    /* ── Floating orbs ── */
+    /* ── Orbs ── */
     .orb { position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; opacity: 0.55; }
     .orb-1 { width: 500px; height: 500px; background: radial-gradient(circle, #4f46e5, #7c3aed); top: -180px; left: -120px; animation: orbFloat 10s ease-in-out infinite alternate; }
     .orb-2 { width: 400px; height: 400px; background: radial-gradient(circle, #06b6d4, #10b981); bottom: -160px; right: -100px; animation: orbFloat 13s ease-in-out infinite alternate-reverse; }
     .orb-3 { width: 260px; height: 260px; background: radial-gradient(circle, #f43f5e, #f59e0b); top: 40%; left: 60%; animation: orbFloat 9s ease-in-out infinite alternate; }
-    @keyframes orbFloat { from { transform: translate(0,0) scale(1); } to { transform: translate(24px, 18px) scale(1.07); } }
+    @keyframes orbFloat { from { transform: translate(0,0) scale(1); } to { transform: translate(24px,18px) scale(1.07); } }
 
-    /* ── Chat Wrapper — claymorphism dark ── */
+    /* ── API Key Gate ── */
+    #keyGate {
+      position: fixed; inset: 0; z-index: 100;
+      background: rgba(10,10,22,0.92);
+      backdrop-filter: blur(20px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .key-card {
+      width: 100%; max-width: 420px;
+      background: rgba(22,22,42,0.95);
+      border: 1.5px solid rgba(79,70,229,0.35);
+      border-radius: 32px;
+      padding: 36px 32px;
+      box-shadow: 8px 8px 0px rgba(79,70,229,0.28), 0 30px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.07);
+      text-align: center;
+    }
+    .key-logo {
+      width: 64px; height: 64px; border-radius: 22px;
+      background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+      box-shadow: 6px 6px 0px rgba(79,70,229,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+      border: 1.5px solid rgba(255,255,255,0.15);
+    }
+    .key-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 6px;
+    }
+    .key-sub { font-size: 13px; color: var(--text-dim); margin-bottom: 24px; line-height: 1.6; }
+    .key-sub a { color: var(--electric-l); text-decoration: none; }
+    .key-sub a:hover { text-decoration: underline; }
+    .key-input {
+      width: 100%; background: rgba(255,255,255,0.06);
+      border: 1.5px solid rgba(255,255,255,0.12); border-radius: 14px;
+      padding: 13px 16px; font-family: 'Inter', sans-serif;
+      font-size: 13.5px; color: var(--text); outline: none;
+      transition: all 0.2s ease; margin-bottom: 10px;
+      letter-spacing: 0.5px;
+    }
+    .key-input::placeholder { color: var(--text-dim); letter-spacing: 0; }
+    .key-input:focus { border-color: rgba(79,70,229,0.6); background: rgba(255,255,255,0.09); box-shadow: 0 0 0 3px rgba(79,70,229,0.14); }
+    .key-remember {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; color: var(--text-dim); cursor: pointer;
+      margin-bottom: 18px; justify-content: flex-start;
+      user-select: none;
+    }
+    .key-remember input[type=checkbox] { accent-color: var(--electric); width: 14px; height: 14px; cursor: pointer; }
+    .key-btn {
+      width: 100%; padding: 13px;
+      background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+      border: 1.5px solid rgba(255,255,255,0.18); border-radius: 14px;
+      color: white; font-family: 'Inter', sans-serif;
+      font-size: 14px; font-weight: 700; cursor: pointer;
+      box-shadow: 5px 5px 0px rgba(79,70,229,0.38), inset 0 1px 0 rgba(255,255,255,0.2);
+      transition: transform 0.18s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.18s ease;
+    }
+    .key-btn:hover { transform: translateY(-2px); box-shadow: 6px 7px 0px rgba(79,70,229,0.45), 0 8px 20px rgba(79,70,229,0.3); }
+    .key-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .key-err { font-size: 12px; color: #f87171; margin-top: 10px; min-height: 16px; }
+    .key-note { font-size: 11px; color: var(--text-dim); margin-top: 14px; opacity: 0.7; }
+
+    /* ── Chat Wrapper ── */
     .chat-wrapper {
       position: relative; z-index: 1;
       width: 100%; max-width: 480px;
       height: min(740px, calc(100vh - 32px));
       display: flex; flex-direction: column;
-      background: rgba(22, 22, 42, 0.78);
-      backdrop-filter: blur(28px);
-      -webkit-backdrop-filter: blur(28px);
+      background: rgba(22,22,42,0.78);
+      backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
       border-radius: 40px;
       border: 1.5px solid rgba(255,255,255,0.10);
-      box-shadow:
-        0 0 0 1px rgba(79,70,229,0.18),
-        8px 8px 0px 0px rgba(79,70,229,0.22),
-        0 30px 80px rgba(0,0,0,0.55),
-        inset 0 1px 0 rgba(255,255,255,0.09);
+      box-shadow: 0 0 0 1px rgba(79,70,229,0.18), 8px 8px 0px 0px rgba(79,70,229,0.22), 0 30px 80px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.09);
       overflow: hidden;
     }
 
@@ -76,28 +132,30 @@
       box-shadow: 0 4px 24px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.08);
       flex-shrink: 0;
     }
-
-    /* Logo mark */
     .header-logo {
-      width: 52px; height: 52px; flex-shrink: 0;
-      border-radius: 18px;
+      width: 52px; height: 52px; flex-shrink: 0; border-radius: 18px;
       background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
       display: flex; align-items: center; justify-content: center;
       box-shadow: 6px 6px 0px rgba(79,70,229,0.45), inset 0 1px 0 rgba(255,255,255,0.25);
       border: 1.5px solid rgba(255,255,255,0.18);
       animation: logoHover 4s ease-in-out infinite;
     }
-    @keyframes logoHover { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-3px) rotate(2deg); } }
-
+    @keyframes logoHover { 0%,100%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-3px) rotate(2deg);} }
     .header-info { flex: 1; }
-    .header-name {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 18px; font-weight: 800; color: #fff;
-      letter-spacing: -0.3px; line-height: 1.1;
-    }
+    .header-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 800; color: #fff; letter-spacing: -0.3px; line-height: 1.1; }
     .header-sub { font-size: 11.5px; font-weight: 500; color: var(--text-dim); margin-top: 3px; display: flex; align-items: center; gap: 6px; }
     .pulse-dot { width: 7px; height: 7px; background: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981; animation: pulseDot 2s infinite; }
     @keyframes pulseDot { 0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.6;transform:scale(0.8);} }
+
+    /* key icon in header */
+    .header-key-btn {
+      width: 36px; height: 36px; border-radius: 12px; flex-shrink: 0;
+      background: rgba(255,255,255,0.08); border: 1.5px solid rgba(255,255,255,0.12);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.18s ease; color: var(--text-dim);
+      box-shadow: 3px 3px 0px rgba(0,0,0,0.2);
+    }
+    .header-key-btn:hover { background: rgba(255,255,255,0.14); color: var(--text); transform: translateY(-1px); }
 
     .live-badge {
       display: flex; align-items: center; gap: 5px;
@@ -109,20 +167,13 @@
     }
 
     /* ── Messages ── */
-    .chat-messages {
-      flex: 1; overflow-y: auto;
-      padding: 18px 16px 8px;
-      display: flex; flex-direction: column; gap: 14px;
-      scroll-behavior: smooth;
-    }
+    .chat-messages { flex: 1; overflow-y: auto; padding: 18px 16px 8px; display: flex; flex-direction: column; gap: 14px; scroll-behavior: smooth; }
     .chat-messages::-webkit-scrollbar { width: 4px; }
-    .chat-messages::-webkit-scrollbar-track { background: transparent; }
     .chat-messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 99px; }
 
-    /* ── Message Rows ── */
     .message-row { display: flex; align-items: flex-end; gap: 9px; animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both; }
     .message-row.user-row { flex-direction: row-reverse; }
-    @keyframes popIn { from { opacity:0; transform:scale(0.80) translateY(14px); } to { opacity:1; transform:scale(1) translateY(0); } }
+    @keyframes popIn { from{opacity:0;transform:scale(0.80) translateY(14px);}to{opacity:1;transform:scale(1) translateY(0);} }
 
     .bot-avatar-sm {
       width: 32px; height: 32px; flex-shrink: 0; border-radius: 11px;
@@ -132,36 +183,13 @@
       border: 1.5px solid rgba(255,255,255,0.12);
     }
 
-    /* ── Bubbles — claymorphism ── */
-    .message-bubble {
-      max-width: 78%; padding: 12px 16px;
-      font-size: 13.5px; font-weight: 500; line-height: 1.65; color: var(--text);
-    }
-    .bot-bubble {
-      background: rgba(79,70,229,0.18);
-      border-radius: 22px 22px 22px 6px;
-      border: 1.5px solid rgba(79,70,229,0.30);
-      box-shadow: 5px 5px 0px rgba(79,70,229,0.22), inset 0 1px 0 rgba(255,255,255,0.07);
-      backdrop-filter: blur(12px);
-    }
-    .user-bubble {
-      background: linear-gradient(135deg, rgba(6,182,212,0.22) 0%, rgba(79,70,229,0.25) 100%);
-      border-radius: 22px 22px 6px 22px;
-      border: 1.5px solid rgba(6,182,212,0.28);
-      box-shadow: 5px 5px 0px rgba(6,182,212,0.18), inset 0 1px 0 rgba(255,255,255,0.08);
-      backdrop-filter: blur(12px);
-    }
+    .message-bubble { max-width: 78%; padding: 12px 16px; font-size: 13.5px; font-weight: 500; line-height: 1.65; color: var(--text); }
+    .bot-bubble { background: rgba(79,70,229,0.18); border-radius: 22px 22px 22px 6px; border: 1.5px solid rgba(79,70,229,0.30); box-shadow: 5px 5px 0px rgba(79,70,229,0.22), inset 0 1px 0 rgba(255,255,255,0.07); backdrop-filter: blur(12px); }
+    .user-bubble { background: linear-gradient(135deg, rgba(6,182,212,0.22) 0%, rgba(79,70,229,0.25) 100%); border-radius: 22px 22px 6px 22px; border: 1.5px solid rgba(6,182,212,0.28); box-shadow: 5px 5px 0px rgba(6,182,212,0.18), inset 0 1px 0 rgba(255,255,255,0.08); backdrop-filter: blur(12px); }
 
-    /* Sources */
     .web-label { display: flex; align-items: center; gap: 5px; font-size: 10.5px; font-weight: 600; color: #06b6d4; margin: 8px 0 5px; }
     .sources-wrap { display: flex; flex-wrap: wrap; gap: 5px; }
-    .source-chip {
-      display: inline-flex; align-items: center; gap: 4px;
-      background: rgba(6,182,212,0.10); border-radius: 8px;
-      padding: 4px 9px; font-size: 10.5px; font-weight: 600; color: #67e8f9;
-      border: 1px solid rgba(6,182,212,0.25);
-      text-decoration: none; transition: all 0.15s ease; cursor: pointer;
-    }
+    .source-chip { display: inline-flex; align-items: center; gap: 4px; background: rgba(6,182,212,0.10); border-radius: 8px; padding: 4px 9px; font-size: 10.5px; font-weight: 600; color: #67e8f9; border: 1px solid rgba(6,182,212,0.25); text-decoration: none; transition: all 0.15s ease; cursor: pointer; }
     .source-chip:hover { background: rgba(6,182,212,0.20); transform: translateY(-1px); }
 
     .msg-time { display: block; font-size: 10px; font-weight: 500; color: var(--text-dim); margin-top: 5px; opacity: 0.65; }
@@ -169,77 +197,33 @@
 
     /* ── Typing ── */
     .typing-wrapper { display: flex; align-items: flex-end; gap: 9px; padding: 0 16px 8px; flex-shrink: 0; animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1) both; }
-    .typing-bubble {
-      background: rgba(79,70,229,0.18); border-radius: 22px 22px 22px 6px;
-      border: 1.5px solid rgba(79,70,229,0.25);
-      padding: 12px 16px; display: flex; align-items: center; gap: 5px;
-      box-shadow: 5px 5px 0px rgba(79,70,229,0.18);
-    }
+    .typing-bubble { background: rgba(79,70,229,0.18); border-radius: 22px 22px 22px 6px; border: 1.5px solid rgba(79,70,229,0.25); padding: 12px 16px; display: flex; align-items: center; gap: 5px; box-shadow: 5px 5px 0px rgba(79,70,229,0.18); }
     .typing-label { font-size: 11px; font-weight: 600; color: var(--text-dim); margin-right: 4px; }
     .dot { width: 6px; height: 6px; background: var(--electric-l); border-radius: 50%; animation: dotBounce 1.2s ease-in-out infinite; }
-    .dot:nth-child(2) { animation-delay: 0.2s; } .dot:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes dotBounce { 0%,60%,100%{transform:translateY(0);opacity:0.4;}30%{transform:translateY(-7px);opacity:1;} }
+    .dot:nth-child(2){animation-delay:.2s;}.dot:nth-child(3){animation-delay:.4s;}
+    @keyframes dotBounce{0%,60%,100%{transform:translateY(0);opacity:.4;}30%{transform:translateY(-7px);opacity:1;}}
 
-    /* ── Input area ── */
-    .chat-input-area {
-      display: flex; align-items: center; gap: 10px;
-      padding: 12px 16px 18px;
-      background: rgba(255,255,255,0.03);
-      border-top: 1.5px solid rgba(255,255,255,0.07);
-      flex-shrink: 0;
-    }
-    .chat-input {
-      flex: 1;
-      background: rgba(255,255,255,0.06);
-      border: 1.5px solid rgba(255,255,255,0.10);
-      border-radius: 26px; padding: 12px 18px;
-      font-family: 'Inter', sans-serif; font-size: 13.5px; font-weight: 500;
-      color: var(--text); outline: none;
-      transition: all 0.25s ease;
-      box-shadow: inset 0 2px 8px rgba(0,0,0,0.2), 3px 3px 0px rgba(79,70,229,0.12);
-    }
+    /* ── Input ── */
+    .chat-input-area { display: flex; align-items: center; gap: 10px; padding: 12px 16px 18px; background: rgba(255,255,255,0.03); border-top: 1.5px solid rgba(255,255,255,0.07); flex-shrink: 0; }
+    .chat-input { flex: 1; background: rgba(255,255,255,0.06); border: 1.5px solid rgba(255,255,255,0.10); border-radius: 26px; padding: 12px 18px; font-family: 'Inter', sans-serif; font-size: 13.5px; font-weight: 500; color: var(--text); outline: none; transition: all 0.25s ease; box-shadow: inset 0 2px 8px rgba(0,0,0,0.2), 3px 3px 0px rgba(79,70,229,0.12); }
     .chat-input::placeholder { color: var(--text-dim); font-weight: 400; }
-    .chat-input:focus {
-      border-color: rgba(79,70,229,0.55);
-      background: rgba(255,255,255,0.09);
-      box-shadow: inset 0 2px 8px rgba(0,0,0,0.15), 3px 3px 0px rgba(79,70,229,0.25), 0 0 0 3px rgba(79,70,229,0.12);
-    }
+    .chat-input:focus { border-color: rgba(79,70,229,0.55); background: rgba(255,255,255,0.09); box-shadow: inset 0 2px 8px rgba(0,0,0,0.15), 3px 3px 0px rgba(79,70,229,0.25), 0 0 0 3px rgba(79,70,229,0.12); }
     .chat-input:disabled { opacity: 0.45; cursor: not-allowed; }
 
-    .send-btn {
-      width: 48px; height: 48px; border-radius: 16px; flex-shrink: 0;
-      background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
-      border: 1.5px solid rgba(255,255,255,0.18); color: white;
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
-      transition: transform 0.18s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.18s ease;
-      box-shadow: 5px 5px 0px rgba(79,70,229,0.38), inset 0 1px 0 rgba(255,255,255,0.25);
-    }
+    .send-btn { width: 48px; height: 48px; border-radius: 16px; flex-shrink: 0; background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%); border: 1.5px solid rgba(255,255,255,0.18); color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.18s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.18s ease; box-shadow: 5px 5px 0px rgba(79,70,229,0.38), inset 0 1px 0 rgba(255,255,255,0.25); }
     .send-btn:hover:not(:disabled) { transform: scale(1.07) translateY(-1px); box-shadow: 6px 6px 0px rgba(79,70,229,0.45), 0 8px 20px rgba(79,70,229,0.35); }
     .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .send-btn.bounce { animation: btnBounce 0.38s cubic-bezier(0.34,1.56,0.64,1); }
-    @keyframes btnBounce { 0%{transform:scale(1);}30%{transform:scale(0.86);}65%{transform:scale(1.16);}85%{transform:scale(0.97);}100%{transform:scale(1);} }
+    @keyframes btnBounce{0%{transform:scale(1);}30%{transform:scale(0.86);}65%{transform:scale(1.16);}85%{transform:scale(0.97);}100%{transform:scale(1);}}
 
-    /* ── Date chip ── */
-    .date-chip {
-      align-self: center; font-size: 11px; font-weight: 600; color: var(--text-dim);
-      background: rgba(255,255,255,0.06); border-radius: 99px; padding: 5px 14px;
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-
-    /* ── Error bubble ── */
-    .error-bubble {
-      background: rgba(244,63,94,0.15) !important;
-      border-color: rgba(244,63,94,0.30) !important;
-      box-shadow: 5px 5px 0px rgba(244,63,94,0.18) !important;
-    }
-
-    /* markdown inline code */
-    code { background: rgba(255,255,255,0.10); padding: 1px 5px; border-radius: 5px; font-size: 12.5px; }
+    .date-chip { align-self: center; font-size: 11px; font-weight: 600; color: var(--text-dim); background: rgba(255,255,255,0.06); border-radius: 99px; padding: 5px 14px; border: 1px solid rgba(255,255,255,0.08); }
+    .error-bubble { background: rgba(244,63,94,0.15) !important; border-color: rgba(244,63,94,0.30) !important; box-shadow: 5px 5px 0px rgba(244,63,94,0.18) !important; }
 
     @media (max-width: 500px) {
       body { padding: 0; align-items: flex-end; }
       .chat-wrapper { max-width: 100%; height: 100vh; height: 100dvh; border-radius: 32px 32px 0 0; }
       .orb { display: none; }
+      .key-card { padding: 28px 20px; }
     }
   </style>
 </head>
@@ -249,35 +233,57 @@
   <div class="orb orb-2"></div>
   <div class="orb orb-3"></div>
 
+  <!-- ── API Key Gate ── -->
+  <div id="keyGate">
+    <div class="key-card">
+      <div class="key-logo">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2a4 4 0 0 1 4 4c0 .93-.32 1.78-.85 2.45A4 4 0 0 1 18 12a4 4 0 0 1-2 3.46V17a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-1.54A4 4 0 0 1 6 12a4 4 0 0 1 2.85-3.55A4 4 0 0 1 8 6a4 4 0 0 1 4-4z"/>
+          <circle cx="12" cy="12" r="1.5" fill="white" stroke="none"/>
+        </svg>
+      </div>
+      <div class="key-title">Claybot Pro</div>
+      <div class="key-sub">
+        Enter your Anthropic API key to get started.<br>
+        Get one free at <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a>
+      </div>
+      <input type="password" id="keyInput" class="key-input" placeholder="sk-ant-api03-..." autocomplete="off" spellcheck="false" />
+      <label class="key-remember">
+        <input type="checkbox" id="rememberKey" /> Remember on this device
+      </label>
+      <button class="key-btn" id="keyBtn" onclick="submitKey()">Launch Claybot Pro →</button>
+      <div class="key-err" id="keyErr"></div>
+      <div class="key-note">🔒 Your key is stored only in your browser and sent directly to Anthropic. It is never logged or shared.</div>
+    </div>
+  </div>
+
+  <!-- ── Chat UI ── -->
   <div class="chat-wrapper">
-    <!-- Header -->
     <div class="chat-header">
       <div class="header-logo">
-        <!-- Neural / AI icon -->
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 2a4 4 0 0 1 4 4c0 .93-.32 1.78-.85 2.45A4 4 0 0 1 18 12a4 4 0 0 1-2 3.46V17a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-1.54A4 4 0 0 1 6 12a4 4 0 0 1 2.85-3.55A4 4 0 0 1 8 6a4 4 0 0 1 4-4z"/>
           <circle cx="12" cy="12" r="1.5" fill="white" stroke="none"/>
-          <line x1="12" y1="10.5" x2="12" y2="7"/>
-          <line x1="12" y1="13.5" x2="12" y2="17"/>
         </svg>
       </div>
       <div class="header-info">
         <div class="header-name">Claybot Pro</div>
-        <div class="header-sub">
-          <span class="pulse-dot"></span>
-          AI-powered · Web-connected
-        </div>
+        <div class="header-sub"><span class="pulse-dot"></span> AI-powered · Web-connected</div>
       </div>
-      <div class="live-badge">
+      <div class="live-badge" style="margin-right:8px;">
         <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
         Live
       </div>
+      <!-- Change API key button -->
+      <button class="header-key-btn" onclick="changeKey()" title="Change API key">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+        </svg>
+      </button>
     </div>
 
-    <!-- Messages -->
     <div class="chat-messages" id="chatMessages"></div>
 
-    <!-- Typing -->
     <div class="typing-wrapper" id="typingIndicator" style="display:none;">
       <div class="bot-avatar-sm">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -290,11 +296,8 @@
       </div>
     </div>
 
-    <!-- Input -->
     <div class="chat-input-area">
-      <input type="text" id="userInput" class="chat-input"
-        placeholder="Ask anything — I'll search the web 🌐"
-        autocomplete="off" maxlength="500" />
+      <input type="text" id="userInput" class="chat-input" placeholder="Ask anything — I'll search the web 🌐" autocomplete="off" maxlength="500" />
       <button class="send-btn" id="sendBtn" aria-label="Send">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
@@ -304,98 +307,132 @@
   </div>
 
   <script>
+    // ── DOM ──────────────────────────────────────────────
     const messagesEl  = document.getElementById('chatMessages');
     const inputEl     = document.getElementById('userInput');
     const sendBtn     = document.getElementById('sendBtn');
     const typingEl    = document.getElementById('typingIndicator');
     const typingLabel = document.getElementById('typingLabel');
+    const keyGate     = document.getElementById('keyGate');
+    const keyInput    = document.getElementById('keyInput');
+    const keyErr      = document.getElementById('keyErr');
+    const keyBtn      = document.getElementById('keyBtn');
+    const rememberKey = document.getElementById('rememberKey');
 
-    let history = [], busy = false;
+    let history = [], busy = false, API_KEY = '';
 
     const SYSTEM = `You are Claybot Pro — a sharp, professional AI assistant with real-time web access.
 You search the web for current data: news, prices, scores, weather, facts — anything time-sensitive.
-Keep answers concise, clear, and accurate. Use minimal emojis. Cite sources briefly.
-Tone: professional but approachable.`;
+Format your responses with proper markdown:
+- Use # for main headings, ## for subheadings, ### for section labels
+- Use **bold** for key terms, *italic* for emphasis, __underline__ for important points
+- Use - for bullet lists and 1. for numbered lists
+- Use > for quotes or callouts
+- Use \`code\` for technical terms
+Keep answers concise, clear, and accurate. Cite sources briefly.`;
 
-    const getTime = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    // ── API Key logic ────────────────────────────────────
+    function loadSavedKey() {
+      try {
+        const k = localStorage.getItem('cb_api_key');
+        if (k) { API_KEY = k; keyGate.style.display = 'none'; init(); }
+      } catch(e) {}
+    }
+
+    function submitKey() {
+      const val = keyInput.value.trim();
+      keyErr.textContent = '';
+      if (!val) { keyErr.textContent = 'Please enter your API key.'; return; }
+      if (!val.startsWith('sk-ant-')) { keyErr.textContent = 'Key should start with sk-ant- — check and retry.'; return; }
+      API_KEY = val;
+      if (rememberKey.checked) {
+        try { localStorage.setItem('cb_api_key', val); } catch(e) {}
+      }
+      keyGate.style.display = 'none';
+      init();
+    }
+
+    function changeKey() {
+      API_KEY = '';
+      try { localStorage.removeItem('cb_api_key'); } catch(e) {}
+      keyInput.value = '';
+      keyErr.textContent = '';
+      keyGate.style.display = 'flex';
+      history = [];
+      messagesEl.innerHTML = '';
+    }
+
+    // Allow Enter in key input
+    keyInput.addEventListener('keydown', e => { if (e.key === 'Enter') submitKey(); });
+
+    // ── Utils ────────────────────────────────────────────
+    const getTime = () => new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
     const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
     function md(raw) {
-      // Escape HTML first
       let t = raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-
-      // Headings: ### ## #
+      // Headings
       t = t.replace(/^### (.+)$/gm, '<p style="font-size:13px;font-weight:700;color:#a5b4fc;text-transform:uppercase;letter-spacing:.6px;margin:10px 0 3px;">$1</p>');
       t = t.replace(/^## (.+)$/gm,  '<p style="font-size:16.5px;font-weight:800;color:#e2e8f0;margin:12px 0 4px;letter-spacing:-.2px;line-height:1.3;">$1</p>');
       t = t.replace(/^# (.+)$/gm,   '<p style="font-size:19px;font-weight:800;color:#fff;margin:14px 0 5px;letter-spacing:-.3px;line-height:1.25;border-bottom:1.5px solid rgba(79,70,229,.35);padding-bottom:6px;">$1</p>');
-
-      // Horizontal rule
+      // HR
       t = t.replace(/^(-{3,}|\*{3,})$/gm, '<hr style="border:none;border-top:1px solid rgba(255,255,255,.1);margin:10px 0;">');
-
       // Bold+italic
       t = t.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
       // Bold
       t = t.replace(/\*\*(.+?)\*\*/g, '<strong style="font-weight:700;color:#e2e8f0;">$1</strong>');
       // Italic
       t = t.replace(/\*(.+?)\*/g, '<em style="color:#c4b5fd;font-style:italic;">$1</em>');
-      // Underline via __text__
+      // Underline
       t = t.replace(/__(.+?)__/g, '<u style="text-decoration-color:rgba(99,102,241,.7);">$1</u>');
       // Strikethrough
       t = t.replace(/~~(.+?)~~/g, '<s style="opacity:.55;">$1</s>');
-      // Inline code
+      // Code
       t = t.replace(/`([^`]+)`/g, '<code style="background:rgba(255,255,255,.10);padding:1px 6px;border-radius:5px;font-size:12px;color:#67e8f9;font-family:monospace;">$1</code>');
-
-      // Unordered lists: lines starting with - or *
+      // Unordered list
       t = t.replace(/^[*\-] (.+)$/gm, '<li style="margin:3px 0 3px 4px;padding-left:4px;list-style:none;display:flex;gap:7px;align-items:flex-start;"><span style="color:#818cf8;margin-top:3px;flex-shrink:0;">▸</span><span>$1</span></li>');
-      // Ordered lists
-      t = t.replace(/^\d+\. (.+)$/gm, (m, p1, offset, str) => {
+      // Ordered list
+      t = t.replace(/^\d+\. (.+)$/gm, (m,p1,offset,str) => {
         const num = (str.slice(0,offset).match(/^\d+\./gm)||[]).length + 1;
-        return `<li style="margin:3px 0 3px 4px;list-style:none;display:flex;gap:7px;align-items:flex-start;"><span style="color:#06b6d4;font-weight:700;font-size:12px;min-width:16px;flex-shrink:0;">${num}.</span><span>$1</span></li>`;
+        return `<li style="margin:3px 0 3px 4px;list-style:none;display:flex;gap:7px;align-items:flex-start;"><span style="color:#06b6d4;font-weight:700;font-size:12px;min-width:16px;flex-shrink:0;">${num}.</span><span>${p1}</span></li>`;
       });
-      // Wrap consecutive <li> in <ul>
+      // Wrap <li>
       t = t.replace(/(<li[^>]*>[\s\S]*?<\/li>)(\s*<li[^>]*>[\s\S]*?<\/li>)*/g, m => `<ul style="padding:0;margin:6px 0;">${m}</ul>`);
-
       // Blockquote
       t = t.replace(/^&gt; (.+)$/gm, '<blockquote style="border-left:3px solid #4f46e5;padding:4px 10px;margin:6px 0;background:rgba(79,70,229,.10);border-radius:0 8px 8px 0;color:#a5b4fc;font-style:italic;">$1</blockquote>');
-
-      // Paragraph breaks (double newlines)
+      // Paragraph & line breaks
       t = t.replace(/\n{2,}/g, '</p><p style="margin:6px 0;">');
-      // Single newlines
       t = t.replace(/\n/g, '<br>');
-
       return `<p style="margin:0;">${t}</p>`;
     }
 
-    /* Bot SVG icon inline */
-    const botIconSVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
-    </svg>`;
+    const botIconSVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>`;
 
+    // ── Init chat ────────────────────────────────────────
     function init() {
       const chip = document.createElement('div');
       chip.className = 'date-chip';
       chip.textContent = new Date().toLocaleDateString([], { weekday:'long', month:'long', day:'numeric' });
       messagesEl.appendChild(chip);
-      addBotMessage("Hello! I'm Claybot Pro — your AI assistant with live internet access. Ask me about current events, data, prices, weather, or anything else. I'll search in real time.", []);
+      addBotMessage("Hello! I'm **Claybot Pro** — your AI assistant with __live internet access__. Ask me about current events, data, prices, weather, or anything else. I'll search in real time.", []);
+      inputEl.focus();
     }
 
-    function addBotMessage(text, sources = []) {
+    // ── Messages ─────────────────────────────────────────
+    function addBotMessage(text, sources=[]) {
       const row = document.createElement('div');
       row.className = 'message-row bot-row';
       let srcHTML = '';
       if (sources && sources.length) {
         const chips = sources.slice(0,4).map(s => {
-          const label = s.title ? s.title.slice(0,26) + (s.title.length > 26 ? '…' : '') : 'Source';
+          const label = s.title ? s.title.slice(0,26)+(s.title.length>26?'…':'') : 'Source';
           return `<a class="source-chip" href="${esc(s.url||'#')}" target="_blank" rel="noopener">
             <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
             ${esc(label)}</a>`;
         }).join('');
-        srcHTML = `<div class="web-label">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-          Web sources</div><div class="sources-wrap">${chips}</div>`;
+        srcHTML = `<div class="web-label"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Web sources</div><div class="sources-wrap">${chips}</div>`;
       }
-      row.innerHTML = `
-        <div class="bot-avatar-sm">${botIconSVG}</div>
+      row.innerHTML = `<div class="bot-avatar-sm">${botIconSVG}</div>
         <div style="max-width:80%">
           <div class="message-bubble bot-bubble">${md(text)}${srcHTML}</div>
           <span class="msg-time">${getTime()}</span>
@@ -406,110 +443,116 @@ Tone: professional but approachable.`;
     function addUserMessage(text) {
       const row = document.createElement('div');
       row.className = 'message-row user-row';
-      row.innerHTML = `
-        <div>
-          <div class="message-bubble user-bubble">${esc(text)}</div>
-          <span class="msg-time">${getTime()}</span>
-        </div>`;
+      row.innerHTML = `<div><div class="message-bubble user-bubble">${esc(text)}</div><span class="msg-time">${getTime()}</span></div>`;
       messagesEl.appendChild(row); scrollBottom();
     }
 
     function addErrorMessage(text) {
       const row = document.createElement('div');
       row.className = 'message-row bot-row';
-      row.innerHTML = `
-        <div class="bot-avatar-sm">${botIconSVG}</div>
-        <div><div class="message-bubble bot-bubble error-bubble">${esc(text)}</div>
-        <span class="msg-time">${getTime()}</span></div>`;
+      row.innerHTML = `<div class="bot-avatar-sm">${botIconSVG}</div><div><div class="message-bubble bot-bubble error-bubble">${esc(text)}</div><span class="msg-time">${getTime()}</span></div>`;
       messagesEl.appendChild(row); scrollBottom();
     }
 
-    function showTyping(label = 'thinking') { typingLabel.textContent = label; typingEl.style.display = 'flex'; scrollBottom(); }
-    function hideTyping() { typingEl.style.display = 'none'; }
-    function scrollBottom() { requestAnimationFrame(() => { messagesEl.scrollTop = messagesEl.scrollHeight; }); }
-    function setBusy(v) { busy = v; inputEl.disabled = v; sendBtn.disabled = v; }
+    function showTyping(label='thinking') { typingLabel.textContent=label; typingEl.style.display='flex'; scrollBottom(); }
+    function hideTyping() { typingEl.style.display='none'; }
+    function scrollBottom() { requestAnimationFrame(()=>{ messagesEl.scrollTop=messagesEl.scrollHeight; }); }
+    function setBusy(v) { busy=v; inputEl.disabled=v; sendBtn.disabled=v; }
 
     function extractText(content) {
-      if (!content) return "I received an empty response. Please try again.";
-      if (typeof content === 'string') return content;
-      return content.filter(b => b.type === 'text').map(b => b.text).join('\n').trim() || "No response received. Please retry.";
+      if (!content) return "Empty response received. Please try again.";
+      if (typeof content==='string') return content;
+      return content.filter(b=>b.type==='text').map(b=>b.text).join('\n').trim() || "No response. Please retry.";
     }
     function extractSources(content) {
-      if (!content || typeof content === 'string') return [];
-      const sources = [], seen = new Set();
+      if (!content||typeof content==='string') return [];
+      const sources=[], seen=new Set();
       for (const b of content) {
-        if (b.type === 'web_search_result' || (b.type === 'document' && b.source)) sources.push({ title: b.title || b.source?.title, url: b.url || b.source?.url });
-        if (b.citations) for (const c of b.citations) sources.push({ title: c.title || c.cited_text?.slice(0,40), url: c.url });
+        if (b.type==='web_search_result'||(b.type==='document'&&b.source)) sources.push({title:b.title||b.source?.title,url:b.url||b.source?.url});
+        if (b.citations) for(const c of b.citations) sources.push({title:c.title||c.cited_text?.slice(0,40),url:c.url});
       }
-      return sources.filter(s => { if (!s.url || seen.has(s.url)) return false; seen.add(s.url); return true; });
+      return sources.filter(s=>{ if(!s.url||seen.has(s.url)) return false; seen.add(s.url); return true; });
     }
 
+    // ── API Call ─────────────────────────────────────────
     async function askClaybot(userText) {
-      history.push({ role: 'user', content: userText });
+      history.push({ role:'user', content:userText });
       setBusy(true); showTyping('thinking');
       try {
         const res1 = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method:'POST',
+          headers:{
+            'Content-Type':'application/json',
+            'x-api-key': API_KEY,
+            'anthropic-version': '2023-06-01',
+            'anthropic-dangerous-direct-browser-access': 'true'
+          },
           body: JSON.stringify({
-            model: 'claude-sonnet-4-20250514', max_tokens: 1000,
+            model:'claude-sonnet-4-20250514', max_tokens:1000,
             system: SYSTEM,
-            tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+            tools:[{type:'web_search_20250305',name:'web_search'}],
             messages: history
           })
         });
-        const data1 = await res1.json();
-        if (data1.error) throw new Error(data1.error.message || 'API error');
 
-        const usedSearch = data1.content && data1.content.some(b => b.type === 'tool_use' && b.name === 'web_search');
+        if (!res1.ok) {
+          const errData = await res1.json().catch(()=>({}));
+          if (res1.status===401) { hideTyping(); setBusy(false); history.pop(); addErrorMessage('Invalid API key. Click the 🔑 icon in the header to update it.'); return; }
+          throw new Error(errData.error?.message || `HTTP ${res1.status}`);
+        }
+
+        const data1 = await res1.json();
+        if (data1.error) throw new Error(data1.error.message||'API error');
+
+        const usedSearch = data1.content?.some(b=>b.type==='tool_use'&&b.name==='web_search');
         if (usedSearch) {
           showTyping('searching the web 🌐');
-          history.push({ role: 'assistant', content: data1.content });
-          if (data1.stop_reason === 'tool_use') {
-            const toolResults = data1.content.filter(b => b.type === 'tool_use').map(tb => ({ type: 'tool_result', tool_use_id: tb.id, content: tb.input ? JSON.stringify(tb.input) : 'Search completed' }));
-            history.push({ role: 'user', content: toolResults });
-            const res2 = await fetch('https://api.anthropic.com/v1/messages', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                model: 'claude-sonnet-4-20250514', max_tokens: 1000,
-                system: SYSTEM,
-                tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-                messages: history
-              })
+          history.push({role:'assistant',content:data1.content});
+          if (data1.stop_reason==='tool_use') {
+            const toolResults = data1.content.filter(b=>b.type==='tool_use').map(tb=>({type:'tool_result',tool_use_id:tb.id,content:tb.input?JSON.stringify(tb.input):'Search completed'}));
+            history.push({role:'user',content:toolResults});
+            const res2 = await fetch('https://api.anthropic.com/v1/messages',{
+              method:'POST',
+              headers:{
+                'Content-Type':'application/json',
+                'x-api-key': API_KEY,
+                'anthropic-version':'2023-06-01',
+                'anthropic-dangerous-direct-browser-access':'true'
+              },
+              body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:SYSTEM,tools:[{type:'web_search_20250305',name:'web_search'}],messages:history})
             });
             const data2 = await res2.json();
-            if (data2.error) throw new Error(data2.error.message || 'Follow-up API error');
-            const finalText = extractText(data2.content);
-            const sources = extractSources(data2.content);
-            history.push({ role: 'assistant', content: data2.content });
-            hideTyping(); addBotMessage(finalText, sources);
+            if (data2.error) throw new Error(data2.error.message||'Follow-up API error');
+            history.push({role:'assistant',content:data2.content});
+            hideTyping(); addBotMessage(extractText(data2.content), extractSources(data2.content));
           } else {
             hideTyping(); addBotMessage(extractText(data1.content), extractSources(data1.content));
           }
         } else {
-          const finalText = extractText(data1.content);
-          history.push({ role: 'assistant', content: data1.content });
-          hideTyping(); addBotMessage(finalText, []);
+          history.push({role:'assistant',content:data1.content});
+          hideTyping(); addBotMessage(extractText(data1.content), []);
         }
-      } catch (err) {
+      } catch(err) {
         console.error(err); hideTyping();
-        addErrorMessage(`Something went wrong: ${err.message.includes('fetch') ? 'Check your connection and try again.' : 'Please try again.'}`);
+        addErrorMessage(`Something went wrong: ${err.message.includes('fetch')?'Check your connection.':err.message}`);
         history.pop();
       } finally { setBusy(false); inputEl.focus(); }
     }
 
+    // ── Send ─────────────────────────────────────────────
     function sendMessage() {
       if (busy) return;
       const text = inputEl.value.trim(); if (!text) return;
       sendBtn.classList.remove('bounce'); void sendBtn.offsetWidth; sendBtn.classList.add('bounce');
-      setTimeout(() => sendBtn.classList.remove('bounce'), 380);
-      addUserMessage(text); inputEl.value = ''; askClaybot(text);
+      setTimeout(()=>sendBtn.classList.remove('bounce'), 380);
+      addUserMessage(text); inputEl.value=''; askClaybot(text);
     }
 
     sendBtn.addEventListener('click', sendMessage);
-    inputEl.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
-    init();
+    inputEl.addEventListener('keydown', e=>{ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();} });
+
+    // ── Boot ─────────────────────────────────────────────
+    loadSavedKey();
   </script>
 </body>
 </html>
