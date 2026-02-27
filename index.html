@@ -292,34 +292,8 @@ Format your responses with proper markdown:
 - Use \`code\` for technical terms
 Keep answers concise, accurate, and well-structured. Cite sources when referencing specific facts.`;
 
-    // ── API Key ───────────────────────────────────────────
-    function loadSavedKey() {
-      try {
-        const k = localStorage.getItem('cb_gemini_key');
-        if (k) { API_KEY = k; keyGate.style.display = 'none'; init(); }
-      } catch(e) {}
-    }
-
-    function submitKey() {
-      const val = keyInput.value.trim();
-      keyErr.textContent = '';
-      if (!val) { keyErr.textContent = 'Please enter your API key.'; return; }
-      if (!val.startsWith('AIza')) { keyErr.textContent = 'Gemini keys start with "AIza" — check and retry.'; return; }
-      API_KEY = val;
-      if (rememberKey.checked) { try { localStorage.setItem('cb_gemini_key', val); } catch(e) {} }
-      keyGate.style.display = 'none';
-      init();
-    }
-
-    function changeKey() {
-      API_KEY = '';
-      try { localStorage.removeItem('cb_gemini_key'); } catch(e) {}
-      keyInput.value = ''; keyErr.textContent = '';
-      keyGate.style.display = 'flex';
-      history = []; messagesEl.innerHTML = '';
-    }
-
-    keyInput.addEventListener('keydown', e => { if (e.key === 'Enter') submitKey(); });
+    // ── Boot ─────────────────────────────────────────────
+    init();
 
     // ── Utils ─────────────────────────────────────────────
     const getTime = () => new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
@@ -418,7 +392,10 @@ Keep answers concise, accurate, and well-structured. Cite sources when referenci
 
         const res = await fetch(`${API_BASE}:generateContent?key=${API_KEY}`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Referer': 'https://gagan-a-ayi.github.io/claybot.github.io/'
+          },
           body: JSON.stringify(body)
         });
 
