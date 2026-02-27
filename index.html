@@ -315,9 +315,10 @@ msgContainer.appendChild(row); scrollBottom();
     chip.addEventListener('click', () => sendMessage(chip.dataset.msg));
   });
   // End Chat click
-  if (endBtn) {const endBtn = row.querySelector('.end-chat-btn');
-    endBtn.addEventListener('click', endConversation);
-  }
+ const endBtn = row.querySelector('.end-chat-btn');
+ if (endBtn) {
+   endBtn.addEventListener('click', endConversation);
+ }
   const nb = document.getElementById('next-level-btn');
   if (nb) {
     nb.addEventListener('click', () => {
