@@ -1327,6 +1327,628 @@ const DATASET = {
       }
     },
     subQR: ["Can't fall asleep", "Waking up during the night", "Always tired / no energy", "Nightmares / disturbed sleep"]
+  },
+    stress: {
+    label: "stress",
+    subtypes: {
+
+      work: {
+        label: "Work / Academic stress",
+        levels: [
+          {
+            level: "basic",
+            icon: "🌱",
+            title: "Basic: Reduce Immediate Load",
+            text: `
+<h2>🌱 basic: Reduce Immediate Load</h2>
+<p>Work stress often comes from perceived overload or lack of control.</p>
+
+<ul>
+<li>List all tasks and circle only the top 1–2 priorities.</li>
+<li>Work in 25-minute focused blocks.</li>
+<li>Take a 5-minute movement break.</li>
+</ul>
+
+<p>Narrowing focus reduces cognitive overwhelm and restores clarity.</p>
+
+<blockquote>Clarity lowers stress.</blockquote>
+`,
+            qr: ["Too many deadlines", "Boss pressure", "I need more help"]
+          },
+          {
+            level: "intermediate",
+            icon: "🌿",
+            title: "Intermediate: Control What You Can",
+            text: `
+<h2>🌿 intermediate: Control What You Can</h2>
+<p>Stress decreases when control increases.</p>
+
+<ul>
+<li>Separate controllable vs uncontrollable tasks.</li>
+<li>Communicate workload boundaries clearly.</li>
+<li>Schedule recovery time intentionally.</li>
+</ul>
+
+<blockquote>Boundaries protect performance.</blockquote>
+`,
+            qr: ["Hard to say no", "Still overwhelmed", "Tell me the next level"]
+          },
+          {
+            level: "advanced",
+            icon: "🔥",
+            title: "Advanced: Burnout Prevention",
+            text: `
+<h2>🔥 advanced: Burnout Prevention</h2>
+<p>Chronic stress may lead to burnout: emotional exhaustion, cynicism, reduced performance.</p>
+
+<ul>
+<li>Track energy patterns.</li>
+<li>Align tasks with core values.</li>
+<li>Introduce restorative non-work activities.</li>
+</ul>
+
+<blockquote>Sustainable output requires recovery.</blockquote>
+`,
+            qr: ["Feeling exhausted", "Work feels meaningless", "Move to pro"]
+          },
+          {
+            level: "pro",
+            icon: "💎",
+            title: "Pro: Occupational Stress Disorder",
+            text: `
+<h2>💎 pro: Occupational Stress Disorder</h2>
+<p>If stress leads to insomnia, panic, depression, or health decline, professional evaluation is recommended.</p>
+
+<ul>
+<li>CBT for stress management</li>
+<li>Burnout-focused therapy</li>
+<li>Medical consultation if symptoms persist</li>
+</ul>
+
+<p>Structured intervention can restore balance.</p>
+
+<blockquote>Chronic stress deserves structured care.</blockquote>
+`,
+            qr: ["I need professional help", "Guide me"]
+          }
+        ]
+      },
+
+      relationship: {
+        label: "Relationship stress",
+        levels: [
+          {
+            level: "basic",
+            icon: "🌱",
+            title: "Basic: Pause Before Reacting",
+            text: `
+<h2>🌱 basic: Pause Before Reacting</h2>
+<p>Relationship stress often escalates through reactive communication.</p>
+
+<ul>
+<li>Pause before responding.</li>
+<li>Use “I feel” statements.</li>
+<li>Focus on one issue at a time.</li>
+</ul>
+
+<blockquote>Calm communication reduces conflict.</blockquote>
+`,
+            qr: ["Frequent arguments", "Misunderstood", "I need more help"]
+          },
+          {
+            level: "intermediate",
+            icon: "🌿",
+            title: "Intermediate: Identify Patterns",
+            text: `
+<h2>🌿 intermediate: Identify Patterns</h2>
+<p>Conflicts often follow predictable cycles.</p>
+
+<ul>
+<li>Notice triggers.</li>
+<li>Identify unmet needs.</li>
+<li>Schedule structured conversations.</li>
+</ul>
+
+<blockquote>Patterns can be changed.</blockquote>
+`,
+            qr: ["Same fight repeats", "Trust issues", "Tell me the next level"]
+          },
+          {
+            level: "advanced",
+            icon: "🔥",
+            title: "Advanced: Attachment Styles",
+            text: `
+<h2>🔥 advanced: Attachment Styles</h2>
+<p>Stress may reflect anxious or avoidant attachment patterns.</p>
+
+<ul>
+<li>Explore your attachment style.</li>
+<li>Practice emotional regulation.</li>
+</ul>
+
+<blockquote>Understanding attachment improves connection.</blockquote>
+`,
+            qr: ["Feels unstable", "Fear abandonment", "Move to pro"]
+          },
+          {
+            level: "pro",
+            icon: "💎",
+            title: "Pro: Relationship Therapy Consideration",
+            text: `
+<h2>💎 pro: Relationship Therapy Consideration</h2>
+<p>If stress involves emotional harm, persistent distress, or safety concerns, professional support is strongly advised.</p>
+
+<ul>
+<li>Couples therapy</li>
+<li>Individual therapy</li>
+<li>Conflict resolution support</li>
+</ul>
+
+<blockquote>Healthy relationships benefit from structured guidance.</blockquote>
+`,
+            qr: ["I need professional help", "Help us"]
+          }
+        ]
+      },
+
+      financial: {
+        label: "Financial stress",
+        levels: [
+          {
+            level: "basic",
+            icon: "🌱",
+            title: "Basic: Clarify the Numbers",
+            text: `
+<h2>🌱 basic: Clarify the Numbers</h2>
+<p>Financial stress increases when uncertainty is high.</p>
+
+<ul>
+<li>List income and expenses.</li>
+<li>Identify one small saving action.</li>
+<li>Avoid catastrophic thinking.</li>
+</ul>
+
+<blockquote>Clarity reduces fear.</blockquote>
+`,
+            qr: ["Debt worries", "Income unstable", "I need more help"]
+          },
+          {
+            level: "intermediate",
+            icon: "🌿",
+            title: "Intermediate: Planning Structure",
+            text: `
+<h2>🌿 intermediate: Planning Structure</h2>
+<p>Structured budgeting reduces anxiety.</p>
+
+<ul>
+<li>Create short-term payment goals.</li>
+<li>Automate essential payments.</li>
+</ul>
+
+<blockquote>Structure builds stability.</blockquote>
+`,
+            qr: ["Still anxious", "Unexpected expenses", "Tell me the next level"]
+          },
+          {
+            level: "advanced",
+            icon: "🔥",
+            title: "Advanced: Stress & Scarcity Mindset",
+            text: `
+<h2>🔥 advanced: Stress & Scarcity Mindset</h2>
+<p>Financial strain can create persistent threat perception.</p>
+
+<ul>
+<li>Practice cognitive reframing.</li>
+<li>Focus on incremental progress.</li>
+</ul>
+
+<blockquote>Progress matters more than perfection.</blockquote>
+`,
+            qr: ["Constant fear", "Feels hopeless", "Move to pro"]
+          },
+          {
+            level: "pro",
+            icon: "💎",
+            title: "Pro: Chronic Financial Anxiety",
+            text: `
+<h2>💎 pro: Chronic Financial Anxiety</h2>
+<p>If financial stress leads to insomnia, panic, or depressive symptoms, therapy may help address underlying anxiety patterns.</p>
+
+<ul>
+<li>CBT for anxiety</li>
+<li>Stress regulation therapy</li>
+</ul>
+
+<blockquote>Financial stress can be managed with support.</blockquote>
+`,
+            qr: ["I need professional help", "Help me cope"]
+          }
+        ]
+      },
+
+      general: {
+        label: "General / I'm not sure",
+        levels: [
+          {
+            level: "basic",
+            icon: "🌱",
+            title: "Basic: Immediate Regulation",
+            text: `
+<h2>🌱 basic: Immediate Regulation</h2>
+<p>Stress activates fight-or-flight.</p>
+
+<ul>
+<li>Slow breathing for 2 minutes.</li>
+<li>Reduce caffeine.</li>
+<li>Short physical movement.</li>
+</ul>
+
+<blockquote>Calm begins physically.</blockquote>
+`,
+            qr: ["Always tense", "Restless", "I need more help"]
+          },
+          {
+            level: "intermediate",
+            icon: "🌿",
+            title: "Intermediate: Stress Mapping",
+            text: `
+<h2>🌿 intermediate: Stress Mapping</h2>
+<p>Identify triggers and patterns.</p>
+
+<ul>
+<li>Track stress moments daily.</li>
+<li>Note physical responses.</li>
+</ul>
+
+<blockquote>Awareness reduces reactivity.</blockquote>
+`,
+            qr: ["Feels constant", "Hard to manage", "Tell me the next level"]
+          },
+          {
+            level: "advanced",
+            icon: "🔥",
+            title: "Advanced: Chronic Stress Cycle",
+            text: `
+<h2>🔥 advanced: Chronic Stress Cycle</h2>
+<p>Chronic stress alters cortisol patterns.</p>
+
+<ul>
+<li>Structured relaxation routines.</li>
+<li>Sleep prioritization.</li>
+</ul>
+
+<blockquote>Recovery breaks the cycle.</blockquote>
+`,
+            qr: ["Burned out", "Sleep affected", "Move to pro"]
+          },
+          {
+            level: "pro",
+            icon: "💎",
+            title: "Pro: Clinical Stress Disorder",
+            text: `
+<h2>💎 pro: Clinical Stress Disorder</h2>
+<p>If stress leads to panic, depression, or health issues, professional care is advised.</p>
+
+<ul>
+<li>CBT for stress</li>
+<li>Medical consultation</li>
+</ul>
+
+<blockquote>Chronic stress requires structured care.</blockquote>
+`,
+            qr: ["I need professional help", "I feel unsafe"]
+          }
+        ]
+      }
+    },
+    subQR: ["Work / Academic stress", "Relationship stress", "Financial stress", "General / I'm not sure"]
+  },
+
+  coping: {
+    label: "coping",
+    subtypes: {
+
+      overwhelm: {
+        label: "I'm overwhelmed",
+        levels: [
+          {
+            level: "basic",
+            icon: "🌱",
+            title: "Basic: One Task Only",
+            text: `
+<h2>🌱 basic: One Task Only</h2>
+<p>Overwhelm comes from cognitive overload.</p>
+
+<ul>
+<li>Choose one small action.</li>
+<li>Work 10 minutes.</li>
+<li>Ignore everything else temporarily.</li>
+</ul>
+
+<blockquote>One step reduces chaos.</blockquote>
+`,
+            qr: ["Still too much", "Mind racing", "I need more help"]
+          },
+          {
+            level: "intermediate",
+            icon: "🌿",
+            title: "Intermediate: Capacity Check",
+            text: `
+<h2>🌿 intermediate: Capacity Check</h2>
+<p>Assess realistic bandwidth.</p>
+
+<ul>
+<li>Eliminate non-essentials.</li>
+<li>Ask for support.</li>
+</ul>
+
+<blockquote>Limits are protective.</blockquote>
+`,
+            qr: ["Hard to delegate", "Pressure high", "Tell me the next level"]
+          },
+          {
+            level: "advanced",
+            icon: "🔥",
+            title: "Advanced: Nervous System Reset",
+            text: `
+<h2>🔥 advanced: Nervous System Reset</h2>
+<p>Overwhelm reflects sympathetic dominance.</p>
+
+<ul>
+<li>Progressive muscle relaxation.</li>
+<li>Daily decompression ritual.</li>
+</ul>
+
+<blockquote>Regulation restores clarity.</blockquote>
+`,
+            qr: ["Feels chronic", "Exhausted", "Move to pro"]
+          },
+          {
+            level: "pro",
+            icon: "💎",
+            title: "Pro: Burnout or Anxiety Condition",
+            text: `
+<h2>💎 pro: Burnout or Anxiety Condition</h2>
+<p>Persistent overwhelm may signal anxiety disorder or burnout.</p>
+
+<ul>
+<li>Structured CBT</li>
+<li>Stress evaluation</li>
+</ul>
+
+<blockquote>Support increases coping capacity.</blockquote>
+`,
+            qr: ["I need professional help", "Assess me"]
+          }
+        ]
+      },
+
+      procrastination: {
+        label: "I'm procrastinating",
+        levels: [
+          {
+            level: "basic",
+            icon: "🌱",
+            title: "Basic: 5-Minute Rule",
+            text: `
+<h2>🌱 basic: 5-Minute Rule</h2>
+<p>Start with just 5 minutes.</p>
+
+<ul>
+<li>Set timer.</li>
+<li>Remove distractions.</li>
+</ul>
+
+<blockquote>Starting is the hardest part.</blockquote>
+`,
+            qr: ["Still avoiding", "Fear failure", "I need more help"]
+          },
+          {
+            level: "intermediate",
+            icon: "🌿",
+            title: "Intermediate: Break It Down",
+            text: `
+<h2>🌿 intermediate: Break It Down</h2>
+<p>Divide into micro-tasks.</p>
+
+<ul>
+<li>Write first sentence only.</li>
+<li>Complete smallest part.</li>
+</ul>
+
+<blockquote>Small tasks reduce resistance.</blockquote>
+`,
+            qr: ["Perfectionism blocks me", "Still stuck", "Tell me the next level"]
+          },
+          {
+            level: "advanced",
+            icon: "🔥",
+            title: "Advanced: Emotional Avoidance",
+            text: `
+<h2>🔥 advanced: Emotional Avoidance</h2>
+<p>Procrastination protects from discomfort.</p>
+
+<ul>
+<li>Identify feared outcome.</li>
+<li>Challenge catastrophic thinking.</li>
+</ul>
+
+<blockquote>Avoidance feels safe but costs progress.</blockquote>
+`,
+            qr: ["Chronic issue", "Deep fear", "Move to pro"]
+          },
+          {
+            level: "pro",
+            icon: "💎",
+            title: "Pro: Executive Dysfunction Screening",
+            text: `
+<h2>💎 pro: Executive Dysfunction Screening</h2>
+<p>Persistent procrastination may relate to ADHD, depression, or anxiety.</p>
+
+<ul>
+<li>Clinical evaluation</li>
+<li>Behavioral activation therapy</li>
+</ul>
+
+<blockquote>Root causes deserve assessment.</blockquote>
+`,
+            qr: ["I need professional help", "Assess further"]
+          }
+        ]
+      },
+
+      anger: {
+        label: "I'm angry / frustrated",
+        levels: [
+          {
+            level: "basic",
+            icon: "🌱",
+            title: "Basic: Pause",
+            text: `
+<h2>🌱 basic: Pause</h2>
+<p>Anger is high arousal.</p>
+
+<ul>
+<li>Step away.</li>
+<li>Slow breathing.</li>
+</ul>
+
+<blockquote>Pause prevents regret.</blockquote>
+`,
+            qr: ["Explode quickly", "It escalates", "I need more help"]
+          },
+          {
+            level: "intermediate",
+            icon: "🌿",
+            title: "Intermediate: Identify Need",
+            text: `
+<h2>🌿 intermediate: Identify Need</h2>
+<p>Anger signals unmet needs.</p>
+
+<ul>
+<li>Name the need.</li>
+<li>Communicate assertively.</li>
+</ul>
+
+<blockquote>Understanding softens anger.</blockquote>
+`,
+            qr: ["Still reactive", "Recurring fights", "Tell me the next level"]
+          },
+          {
+            level: "advanced",
+            icon: "🔥",
+            title: "Advanced: Regulation Skills",
+            text: `
+<h2>🔥 advanced: Regulation Skills</h2>
+<p>Use distress tolerance techniques.</p>
+
+<ul>
+<li>Cold water reset.</li>
+<li>Opposite action skill.</li>
+</ul>
+
+<blockquote>Regulation is trainable.</blockquote>
+`,
+            qr: ["Feels uncontrollable", "I regret later", "Move to pro"]
+          },
+          {
+            level: "pro",
+            icon: "💎",
+            title: "Pro: Impulse or Anger Disorder",
+            text: `
+<h2>💎 pro: Impulse or Anger Disorder</h2>
+<p>If anger causes harm or legal risk, professional support is essential.</p>
+
+<ul>
+<li>Anger management therapy</li>
+<li>Impulse control treatment</li>
+</ul>
+
+<blockquote>Uncontrolled anger deserves structured care.</blockquote>
+`,
+            qr: ["I need professional help", "I feel out of control"]
+          }
+        ]
+      },
+
+      motivation: {
+        label: "I lack motivation",
+        levels: [
+          {
+            level: "basic",
+            icon: "🌱",
+            title: "Basic: Activate Small Action",
+            text: `
+<h2>🌱 basic: Activate Small Action</h2>
+<p>Motivation often follows action.</p>
+
+<ul>
+<li>Complete one tiny task.</li>
+<li>Change environment briefly.</li>
+</ul>
+
+<blockquote>Action builds momentum.</blockquote>
+`,
+            qr: ["Still low energy", "Feels pointless", "I need more help"]
+          },
+          {
+            level: "intermediate",
+            icon: "🌿",
+            title: "Intermediate: Clarify Purpose",
+            text: `
+<h2>🌿 intermediate: Clarify Purpose</h2>
+<p>Reconnect with long-term meaning.</p>
+
+<ul>
+<li>Write why this matters.</li>
+<li>Set small reward.</li>
+</ul>
+
+<blockquote>Purpose fuels effort.</blockquote>
+`,
+            qr: ["Hard to care", "Still flat", "Tell me the next level"]
+          },
+          {
+            level: "advanced",
+            icon: "🔥",
+            title: "Advanced: Behavioral Activation",
+            text: `
+<h2>🔥 advanced: Behavioral Activation</h2>
+<p>Schedule rewarding activities even without motivation.</p>
+
+<ul>
+<li>Plan structured daily activity.</li>
+<li>Track completion.</li>
+</ul>
+
+<blockquote>Consistency restores drive.</blockquote>
+`,
+            qr: ["Low for weeks", "Feels depressive", "Move to pro"]
+          },
+          {
+            level: "pro",
+            icon: "💎",
+            title: "Pro: Depression Screening",
+            text: `
+<h2>💎 pro: Depression Screening</h2>
+<p>Persistent lack of motivation may indicate depressive disorder.</p>
+
+<ul>
+<li>Clinical evaluation</li>
+<li>CBT or medication consultation</li>
+</ul>
+
+<p>If you feel unsafe, seek urgent medical care.</p>
+
+<blockquote>Lack of motivation can be treated.</blockquote>
+`,
+            qr: ["I need professional help", "I feel unsafe"]
+          }
+        ]
+      }
+
+    },
+    subQR: ["I'm overwhelmed", "I'm procrastinating", "I'm angry / frustrated", "I lack motivation"]
   }
 }; // end DATASET
 
